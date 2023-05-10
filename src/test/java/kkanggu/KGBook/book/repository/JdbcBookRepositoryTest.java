@@ -32,10 +32,14 @@ class JdbcBookRepositoryTest {
 	@Test
 	@DisplayName("서적 저장")
 	void createBookTest() {
+		// given
+
+		// when
 		BookEntity book = new BookEntity("title", "author", "publisher", LocalDate.now(), "isbn", "description");
 		jdbcBookRepository.saveBook(book);
 		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), book.getIsbn());
 
+		// then
 		assertThat(findBook).isNotNull();
 		assertThat(book.getTitle()).isEqualTo(findBook.getTitle());
 		assertThat(book.getAuthor()).isEqualTo(findBook.getAuthor());
