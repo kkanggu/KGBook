@@ -14,18 +14,25 @@ import kkanggu.KGBook.sql.BookSql;
 @Repository
 public class JdbcBookRepository implements BookRepository {
 	private final JdbcTemplate jdbcTemplate;
+	private Long id;
 
 	@Autowired
 	public JdbcBookRepository(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
+	public void setId() {
+		id = jdbcTemplate.queryForObject(BookSql.SELECT_MAX_ID, Long.class);
+		if (null == id) {
+			id = 0L;
+		}
+	}
+
 	@Override
 	public Long saveBook(BookEntity book) {
-		Object[] params = {book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(), book.getIsbn(), book.getDescription()};
+		Object[] params = {++id, book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(), book.getIsbn(), book.getDescription()};
 		jdbcTemplate.update(BookSql.CREATE_BOOK, params);
-		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), book.getIsbn());
-		return null == findBook ? null : findBook.getId();
+		return id;
 	}
 
 	@Override
@@ -37,6 +44,7 @@ public class JdbcBookRepository implements BookRepository {
 	private RowMapper<BookEntity> rowMapper() {
 		return (rs, rowNum) -> {
 			BookEntity book = new BookEntity();
+			book.setId(rs.getLong("id"));
 			book.setTitle(rs.getString("title"));
 			book.setAuthor(rs.getString("author"));
 			book.setPublisher(rs.getString("publisher"));

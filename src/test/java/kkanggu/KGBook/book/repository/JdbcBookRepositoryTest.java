@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import javax.sql.DataSource;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,11 @@ class JdbcBookRepositoryTest {
 		this.jdbcBookRepository = new JdbcBookRepository(dataSource);
 	}
 
+	@BeforeEach
+	void setup() {
+		jdbcBookRepository.setId();
+	}
+
 	void insertBooksBeforeTest() {
 		for (int i = 0; i < 10; ++i) {
 			BookEntity book = new BookEntity("book" + (i + 1), "author" + (i + 1), "publisher", LocalDate.now(), "147258" + i, "description");
@@ -46,8 +52,8 @@ class JdbcBookRepositoryTest {
 
 		// when
 		BookEntity book = new BookEntity("title", "author", "publisher", LocalDate.now(), "isbn", "description");
-		jdbcBookRepository.saveBook(book);
-		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), book.getIsbn());
+		Long id = jdbcBookRepository.saveBook(book);
+		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ID, rowMapper(), id);
 
 		// then
 		assertThat(findBook).isNotNull();
