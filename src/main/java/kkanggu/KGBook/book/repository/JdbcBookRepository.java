@@ -1,6 +1,7 @@
 package kkanggu.KGBook.book.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,12 @@ public class JdbcBookRepository implements BookRepository {
 		jdbcTemplate.update(BookSql.CREATE_BOOK, params);
 		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), book.getIsbn());
 		return null == findBook ? null : findBook.getId();
+	}
+
+	@Override
+	public List<BookEntity> findAll() {
+		List<BookEntity> books = jdbcTemplate.query(BookSql.SELECT_BOOKS, rowMapper());
+		return books;
 	}
 
 	private RowMapper<BookEntity> rowMapper() {

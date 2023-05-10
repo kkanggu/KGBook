@@ -3,6 +3,7 @@ package kkanggu.KGBook.book.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.List;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.DisplayName;
@@ -13,12 +14,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.sql.BookSql;
 
 @SpringBootTest
 @Sql("/sql/book/ddl.sql")
 @ActiveProfiles("local")
+@Transactional
 class JdbcBookRepositoryTest {
 	private final JdbcTemplate jdbcTemplate;
 	private final JdbcBookRepository jdbcBookRepository;
@@ -27,6 +30,13 @@ class JdbcBookRepositoryTest {
 	public JdbcBookRepositoryTest(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.jdbcBookRepository = new JdbcBookRepository(dataSource);
+	}
+
+	void insertBooksBeforeTest() {
+		for (int i = 0; i < 10; ++i) {
+			BookEntity book = new BookEntity("book" + (i + 1), "author" + (i + 1), "publisher", LocalDate.now(), "147258" + i, "description");
+			jdbcBookRepository.saveBook(book);
+		}
 	}
 
 	@Test
@@ -47,6 +57,19 @@ class JdbcBookRepositoryTest {
 		assertThat(book.getPublishDate()).isEqualTo(findBook.getPublishDate());
 		assertThat(book.getIsbn()).isEqualTo(findBook.getIsbn());
 		assertThat(book.getDescription()).isEqualTo(findBook.getDescription());
+	}
+
+	@Test
+	@DisplayName("서적 전체 가져오기")
+	void findAllTest() {
+		// given
+		insertBooksBeforeTest();
+
+		// when
+		List<BookEntity> books = jdbcBookRepository.findAll();
+
+		// then
+		assertThat(books.size()).isEqualTo(10);
 	}
 
 	RowMapper<BookEntity> rowMapper() {
