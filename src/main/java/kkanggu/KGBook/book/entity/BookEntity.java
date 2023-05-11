@@ -14,16 +14,20 @@ public class BookEntity {
 	private LocalDate publishDate;
 	private String isbn;
 	private String description;
+	private String originImageUrl;
+	private String s3ImageUrl;
 
 	public BookEntity() {
 	}
 
-	public BookEntity(String title, String author, String publisher, LocalDate publishDate, String isbn, String description) {
+	public BookEntity(String title, String author, String publisher, LocalDate publishDate, String isbn, String description, String originImageUrl, String s3ImageUrl) {
 		this.title = title;
 		this.author = author;
 		this.publisher = publisher;
 		this.publishDate = publishDate;
 		this.isbn = isbn;
 		this.description = description;
+		this.originImageUrl = originImageUrl;
+		this.s3ImageUrl = s3ImageUrl;
 	}
 }

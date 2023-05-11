@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS BOOK (
   publisher VARCHAR(100) NOT NULL,
   publish_date TIMESTAMP NOT NULL,
   isbn VARCHAR(20) NOT NULL,
-  description TEXT
+  description TEXT,
+  originImageUrl VARCHAR(100),
+  s3ImageUrl VARCHAR(100)
 );
