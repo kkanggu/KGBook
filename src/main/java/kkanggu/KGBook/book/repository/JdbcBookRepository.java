@@ -55,6 +55,12 @@ public class JdbcBookRepository implements BookRepository {
 		return books;
 	}
 
+	@Override
+	public List<BookEntity> findById(Long id) {
+		List<BookEntity> books = jdbcTemplate.query(BookSql.SELECT_BOOKS_BY_ID, rowMapper(), id);
+		return books;
+	}
+
 	private RowMapper<BookEntity> rowMapper() {
 		return (rs, rowNum) -> {
 			BookEntity book = new BookEntity();

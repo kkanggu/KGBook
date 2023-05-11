@@ -92,6 +92,22 @@ class JdbcBookRepositoryTest {
 		}
 	}
 
+	@Test
+	@DisplayName("id를 이용하여 서적 가져오기")
+	void findByIdTest() {
+		// given
+		BookEntity book = new BookEntity("title", "author", "publisher", LocalDate.now(),
+				"isbn", "description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		Long id = jdbcBookRepository.saveBook(book);
+
+		// when
+		List<BookEntity> books = jdbcBookRepository.findById(id);
+
+		// then
+		assertThat(books.size()).isEqualTo(1);
+		assertThat(books.get(0).getPublishDate()).isEqualTo(book.getPublishDate());
+	}
+
 	RowMapper<BookEntity> rowMapper() {
 		return (rs, rowNum) -> {
 			BookEntity book = new BookEntity();

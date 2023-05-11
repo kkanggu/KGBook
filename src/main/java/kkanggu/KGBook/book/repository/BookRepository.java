@@ -10,4 +10,6 @@ public interface BookRepository {
 	Long saveBook(BookEntity book);
 
 	List<BookEntity> findAll();
+
+	List<BookEntity> findById(Long id);
 }
