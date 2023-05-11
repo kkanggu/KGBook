@@ -6,11 +6,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import kkanggu.KGBook.common.Keys;
 
 @SpringBootTest
+@Transactional
 class ImageControllerTest {
 	private final ImageController imageController;
 	private final AmazonS3Client amazonS3Client;
@@ -58,13 +60,13 @@ class ImageControllerTest {
 	void deleteImageTest() {
 		// given
 		String originImageUrl = "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg";
+		String s3ImageUrl = imageController.uploadImage(originImageUrl);
 		ListObjectsV2Request listObjectsV2RequestBefore = new ListObjectsV2Request()
 				.withBucketName(bucket)
 				.withPrefix("book-image/");
 		int initialFileCount = amazonS3Client.listObjectsV2(listObjectsV2RequestBefore)
 				.getObjectSummaries()
 				.size();
-		String s3ImageUrl = imageController.uploadImage(originImageUrl);
 
 		// when
 		boolean isDeleted = imageController.deleteImage(s3ImageUrl);
@@ -77,6 +79,6 @@ class ImageControllerTest {
 
 		// then
 		assertThat(isDeleted).isEqualTo(true);
-		assertThat(uploadedFileCount).isEqualTo(initialFileCount);
+		assertThat(uploadedFileCount).isEqualTo(initialFileCount - 1);
 	}
 }
