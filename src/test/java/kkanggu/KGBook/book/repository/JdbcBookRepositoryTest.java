@@ -101,11 +101,11 @@ class JdbcBookRepositoryTest {
 		Long id = jdbcBookRepository.saveBook(book);
 
 		// when
-		List<BookEntity> books = jdbcBookRepository.findById(id);
+		BookEntity findBook = jdbcBookRepository.findById(id);
 
 		// then
-		assertThat(books.size()).isEqualTo(1);
-		assertThat(books.get(0).getPublishDate()).isEqualTo(book.getPublishDate());
+		assertThat(findBook).isNotNull();
+		assertThat(findBook.getPublishDate()).isEqualTo(book.getPublishDate());
 	}
 
 	RowMapper<BookEntity> rowMapper() {

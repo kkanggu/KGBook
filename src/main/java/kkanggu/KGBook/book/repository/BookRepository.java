@@ -11,5 +11,5 @@ public interface BookRepository {
 
 	List<BookEntity> findAll();
 
-	List<BookEntity> findById(Long id);
+	BookEntity findById(Long id);
 }
