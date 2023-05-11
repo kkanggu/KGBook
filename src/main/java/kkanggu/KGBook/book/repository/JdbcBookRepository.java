@@ -9,16 +9,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import kkanggu.KGBook.book.entity.BookEntity;
+import kkanggu.KGBook.common.aws.ImageController;
 import kkanggu.KGBook.sql.BookSql;
 
 @Repository
 public class JdbcBookRepository implements BookRepository {
 	private final JdbcTemplate jdbcTemplate;
+	private final ImageController imageController;
 	private Long id;
 
 	@Autowired
-	public JdbcBookRepository(DataSource dataSource) {
+	public JdbcBookRepository(DataSource dataSource,
+							  ImageController imageController) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.imageController = imageController;
 	}
 
 	public void setId() {
@@ -30,7 +34,14 @@ public class JdbcBookRepository implements BookRepository {
 
 	@Override
 	public Long saveBook(BookEntity book) {
-		Object[] params = {++id, book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(), book.getIsbn(), book.getDescription()};
+		String s3ImageUrl = imageController.uploadImage(book.getOriginImageUrl());
+
+		if (null == s3ImageUrl) {
+			return null;
+		}
+
+		Object[] params = {++id, book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
+				book.getIsbn(), book.getDescription(), book.getOriginImageUrl(), s3ImageUrl};
 		jdbcTemplate.update(BookSql.CREATE_BOOK, params);
 		return id;
 	}
@@ -52,6 +63,8 @@ public class JdbcBookRepository implements BookRepository {
 			book.setPublishDate(publishDate);
 			book.setIsbn(rs.getString("isbn"));
 			book.setDescription(rs.getString("description"));
+			book.setOriginImageUrl(rs.getString("originImageUrl"));
+			book.setS3ImageUrl(rs.getString("s3ImageUrl"));
 
 			return book;
 		};
