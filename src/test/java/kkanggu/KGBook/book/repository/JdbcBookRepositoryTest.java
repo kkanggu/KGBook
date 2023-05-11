@@ -14,14 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.common.aws.ImageController;
 import kkanggu.KGBook.sql.BookSql;
 
 @SpringBootTest
-@Sql("/sql/book/ddl.sql")
 @ActiveProfiles("local")
 @Transactional
 class JdbcBookRepositoryTest {
@@ -37,17 +35,17 @@ class JdbcBookRepositoryTest {
 		this.imageController = imageController;
 	}
 
-	@BeforeEach
-	void setup() {
-		jdbcBookRepository.setId();
-	}
-
 	void insertBooksBeforeTest() {
 		for (int i = 0; i < 10; ++i) {
 			BookEntity book = new BookEntity("book" + (i + 1), "author" + (i + 1), "publisher", LocalDate.now(),
 					"147258" + i, "description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 			jdbcBookRepository.saveBook(book);
 		}
+	}
+
+	@BeforeEach
+	void clear() {
+		jdbcTemplate.update("DELETE FROM BOOK");
 	}
 
 	@Test

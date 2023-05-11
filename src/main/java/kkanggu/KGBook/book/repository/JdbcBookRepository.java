@@ -23,13 +23,16 @@ public class JdbcBookRepository implements BookRepository {
 							  ImageController imageController) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.imageController = imageController;
+		this.id = getMaxId();
 	}
 
-	public void setId() {
-		id = jdbcTemplate.queryForObject(BookSql.SELECT_MAX_ID, Long.class);
-		if (null == id) {
-			id = 0L;
+	@Override
+	public Long getMaxId() {
+		Long maxId = jdbcTemplate.queryForObject(BookSql.SELECT_MAX_ID, Long.class);
+		if (null == maxId) {
+			maxId = 0L;
 		}
+		return maxId;
 	}
 
 	@Override
