@@ -7,4 +7,9 @@ public class BookSql {
 			"description=?, original_image_url=?, s3_image_url=? WHERE isbn=?;";
 	public static String SELECT_BOOKS = "SELECT * FROM BOOK";
 	public static String SELECT_BOOKS_BY_ISBN = "SELECT * FROM BOOK WHERE isbn = ?";
+	public static String CREATE_USER = "INSERT INTO USER (id, username, password, gender, age, birth, create_date)" +
+			"VALUES (?, ?, ?, ?, ?, ?, ?)";
+	public static String SELECT_MAX_ID = "SELECT MAX(id) FROM ";
+	public static String SELECT_USERS = "SELECT * FROM USER";
+	public static String SELECT_USER_BY_ID = "SELECT * FROM USER WHERE id = ?";
 }
