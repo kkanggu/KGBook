@@ -16,37 +16,26 @@ import kkanggu.KGBook.sql.BookSql;
 public class JdbcBookRepository implements BookRepository {
 	private final JdbcTemplate jdbcTemplate;
 	private final ImageController imageController;
-	private Long id;
 
 	@Autowired
 	public JdbcBookRepository(DataSource dataSource,
 							  ImageController imageController) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.imageController = imageController;
-		this.id = getMaxId();
 	}
 
 	@Override
-	public Long getMaxId() {
-		Long maxId = jdbcTemplate.queryForObject(BookSql.SELECT_MAX_ID, Long.class);
-		if (null == maxId) {
-			maxId = 0L;
-		}
-		return maxId;
-	}
-
-	@Override
-	public Long saveBook(BookEntity book) {
+	public int saveBook(BookEntity book) {
 		String s3ImageUrl = imageController.uploadImage(book.getOriginImageUrl());
 
 		if (null == s3ImageUrl) {
-			return null;
+			return 0;
 		}
 
-		Object[] params = {++id, book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
-				book.getIsbn(), book.getDescription(), book.getOriginImageUrl(), s3ImageUrl};
-		jdbcTemplate.update(BookSql.CREATE_BOOK, params);
-		return id;
+		Object[] params = {book.getIsbn(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
+				book.getDescription(), book.getOriginImageUrl(), s3ImageUrl};
+		int rows = jdbcTemplate.update(BookSql.CREATE_BOOK, params);
+		return rows;
 	}
 
 	@Override
@@ -56,21 +45,20 @@ public class JdbcBookRepository implements BookRepository {
 	}
 
 	@Override
-	public BookEntity findById(Long id) {
-		List<BookEntity> books = jdbcTemplate.query(BookSql.SELECT_BOOKS_BY_ID, rowMapper(), id);
-		return books.get(0);
+	public BookEntity findByIsbn(Long isbn) {
+		BookEntity book = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), isbn);
+		return book;
 	}
 
 	private RowMapper<BookEntity> rowMapper() {
 		return (rs, rowNum) -> {
 			BookEntity book = new BookEntity();
-			book.setId(rs.getLong("id"));
+			book.setIsbn(rs.getLong("isbn"));
 			book.setTitle(rs.getString("title"));
 			book.setAuthor(rs.getString("author"));
 			book.setPublisher(rs.getString("publisher"));
 			LocalDate publishDate = rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate();
 			book.setPublishDate(publishDate);
-			book.setIsbn(rs.getString("isbn"));
 			book.setDescription(rs.getString("description"));
 			book.setOriginImageUrl(rs.getString("originImageUrl"));
 			book.setS3ImageUrl(rs.getString("s3ImageUrl"));

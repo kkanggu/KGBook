@@ -36,9 +36,9 @@ class JdbcBookRepositoryTest {
 	}
 
 	void insertBooksBeforeTest() {
-		for (int i = 0; i < 10; ++i) {
-			BookEntity book = new BookEntity("book" + (i + 1), "author" + (i + 1), "publisher", LocalDate.now(),
-					"147258" + i, "description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		for (int i = 0; i < 4; ++i) {
+			BookEntity book = new BookEntity(1357924680130L + i, "book" + (i + 1), "author" + (i + 1), "publisher", LocalDate.now(),
+					"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 			jdbcBookRepository.saveBook(book);
 		}
 	}
@@ -52,20 +52,21 @@ class JdbcBookRepositoryTest {
 	@DisplayName("서적 저장")
 	void createBookTest() {
 		// given
-		BookEntity book = new BookEntity("title", "author", "publisher", LocalDate.now(),
-				"isbn", "description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
+				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 
 		// when
-		Long id = jdbcBookRepository.saveBook(book);
-		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ID, rowMapper(), id);
+		int rows = jdbcBookRepository.saveBook(book);
+		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), book.getIsbn());
 
 		// then
+		assertThat(rows).isEqualTo(1);
 		assertThat(findBook).isNotNull();
+		assertThat(book.getIsbn()).isEqualTo(findBook.getIsbn());
 		assertThat(book.getTitle()).isEqualTo(findBook.getTitle());
 		assertThat(book.getAuthor()).isEqualTo(findBook.getAuthor());
 		assertThat(book.getPublisher()).isEqualTo(findBook.getPublisher());
 		assertThat(book.getPublishDate()).isEqualTo(findBook.getPublishDate());
-		assertThat(book.getIsbn()).isEqualTo(findBook.getIsbn());
 		assertThat(book.getDescription()).isEqualTo(findBook.getDescription());
 		assertThat(book.getOriginImageUrl()).isEqualTo(findBook.getOriginImageUrl());
 		assertThat(findBook.getS3ImageUrl()).isNotNull();
@@ -84,7 +85,7 @@ class JdbcBookRepositoryTest {
 		List<BookEntity> books = jdbcBookRepository.findAll();
 
 		// then
-		assertThat(books.size()).isEqualTo(10);
+		assertThat(books.size()).isEqualTo(4);
 
 		for (BookEntity book : books) {
 			boolean isDeleted = imageController.deleteImage(book.getS3ImageUrl());
@@ -93,30 +94,34 @@ class JdbcBookRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("id를 이용하여 서적 가져오기")
-	void findByIdTest() {
+	@DisplayName("isbn을 이용하여 서적 가져오기")
+	void findByIsbnTest() {
 		// given
-		BookEntity book = new BookEntity("title", "author", "publisher", LocalDate.now(),
-				"isbn", "description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
-		Long id = jdbcBookRepository.saveBook(book);
+		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
+				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		int rows = jdbcBookRepository.saveBook(book);
 
 		// when
-		BookEntity findBook = jdbcBookRepository.findById(id);
+		BookEntity findBook = jdbcBookRepository.findByIsbn(book.getIsbn());
 
 		// then
+		assertThat(rows).isEqualTo(1);
 		assertThat(findBook).isNotNull();
 		assertThat(findBook.getPublishDate()).isEqualTo(book.getPublishDate());
+
+		boolean isDeleted = imageController.deleteImage(findBook.getS3ImageUrl());
+		assertThat(isDeleted).isEqualTo(true);
 	}
 
 	RowMapper<BookEntity> rowMapper() {
 		return (rs, rowNum) -> {
 			BookEntity book = new BookEntity();
+			book.setIsbn(rs.getLong("isbn"));
 			book.setTitle(rs.getString("title"));
 			book.setAuthor(rs.getString("author"));
 			book.setPublisher(rs.getString("publisher"));
 			LocalDate publishDate = rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate();
 			book.setPublishDate(publishDate);
-			book.setIsbn(rs.getString("isbn"));
 			book.setDescription(rs.getString("description"));
 			book.setOriginImageUrl(rs.getString("originImageUrl"));
 			book.setS3ImageUrl(rs.getString("s3ImageUrl"));
