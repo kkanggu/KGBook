@@ -60,8 +60,8 @@ public class JdbcBookRepository implements BookRepository {
 			LocalDate publishDate = rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate();
 			book.setPublishDate(publishDate);
 			book.setDescription(rs.getString("description"));
-			book.setOriginImageUrl(rs.getString("originImageUrl"));
-			book.setS3ImageUrl(rs.getString("s3ImageUrl"));
+			book.setOriginImageUrl(rs.getString("original_image_url"));
+			book.setS3ImageUrl(rs.getString("s3_image_url"));
 
 			return book;
 		};
