@@ -50,17 +50,17 @@ class JdbcBookRepositoryTest {
 
 	@Test
 	@DisplayName("서적 저장")
-	void createBookTest() {
+	void saveBookTest() {
 		// given
 		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
 				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 
 		// when
-		int rows = jdbcBookRepository.saveBook(book);
+		long isbn = jdbcBookRepository.saveBook(book);
 		BookEntity findBook = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), book.getIsbn());
 
 		// then
-		assertThat(rows).isEqualTo(1);
+		assertThat(isbn).isEqualTo(book.getIsbn());
 		assertThat(findBook).isNotNull();
 		assertThat(book.getIsbn()).isEqualTo(findBook.getIsbn());
 		assertThat(book.getTitle()).isEqualTo(findBook.getTitle());
@@ -99,13 +99,13 @@ class JdbcBookRepositoryTest {
 		// given
 		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
 				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
-		int rows = jdbcBookRepository.saveBook(book);
+		Long isbn = jdbcBookRepository.saveBook(book);
 
 		// when
 		BookEntity findBook = jdbcBookRepository.findByIsbn(book.getIsbn());
 
 		// then
-		assertThat(rows).isEqualTo(1);
+		assertThat(isbn).isEqualTo(book.getIsbn());
 		assertThat(findBook).isNotNull();
 		assertThat(findBook.getPublishDate()).isEqualTo(book.getPublishDate());
 

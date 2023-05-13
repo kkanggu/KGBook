@@ -25,17 +25,17 @@ public class JdbcBookRepository implements BookRepository {
 	}
 
 	@Override
-	public int saveBook(BookEntity book) {
+	public Long saveBook(BookEntity book) {
 		String s3ImageUrl = imageController.uploadImage(book.getOriginImageUrl());
 
 		if (null == s3ImageUrl) {
-			return 0;
+			return null;
 		}
 
 		Object[] params = {book.getIsbn(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
 				book.getDescription(), book.getOriginImageUrl(), s3ImageUrl};
 		int rows = jdbcTemplate.update(BookSql.CREATE_BOOK, params);
-		return rows;
+		return 1 == rows ? book.getIsbn() : null;
 	}
 
 	@Override

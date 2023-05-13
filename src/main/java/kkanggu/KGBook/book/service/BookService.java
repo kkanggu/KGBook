@@ -14,6 +14,11 @@ public class BookService {
 		this.bookRepository = bookRepository;
 	}
 
+	public Long saveBook(BookEntity book){
+		Long isbn = bookRepository.saveBook(book);
+		return isbn;
+	}
+
 	public List<BookEntity> findAll() {
 		List<BookEntity> books = bookRepository.findAll();
 		return books;

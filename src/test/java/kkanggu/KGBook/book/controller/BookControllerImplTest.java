@@ -52,6 +52,21 @@ class BookControllerImplTest {
 	}
 
 	@Test
+	@DisplayName("서적 저장")
+	void saveBook() {
+		// when
+		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
+				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+
+		// given
+		Long isbn = bookRepository.saveBook(book);
+
+		// then
+		assertThat(isbn).isNotNull();
+		assertThat(isbn).isEqualTo(book.getIsbn());
+	}
+
+	@Test
 	@DisplayName("DB에서 서적 정보를 가져옴")
 	void findAllTest() {
 		// given
@@ -71,7 +86,7 @@ class BookControllerImplTest {
 
 	@Test
 	@DisplayName("DB에서 isbn을 통해 서적을 가져옴")
-	void findByIdTest() {
+	void findByIsbnTest() {
 		// given
 		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
 				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
@@ -93,22 +108,5 @@ class BookControllerImplTest {
 
 		boolean isDeleted = imageController.deleteImage(findBook.getS3ImageUrl());
 		assertThat(isDeleted).isEqualTo(true);
-	}
-
-	RowMapper<BookEntity> rowMapper() {
-		return (rs, rowNum) -> {
-			BookEntity book = new BookEntity();
-			book.setIsbn(rs.getLong("isbn"));
-			book.setTitle(rs.getString("title"));
-			book.setAuthor(rs.getString("author"));
-			book.setPublisher(rs.getString("publisher"));
-			LocalDate publishDate = rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate();
-			book.setPublishDate(publishDate);
-			book.setDescription(rs.getString("description"));
-			book.setOriginImageUrl(rs.getString("original_image_url"));
-			book.setS3ImageUrl(rs.getString("s3_image_url"));
-
-			return book;
-		};
 	}
 }
