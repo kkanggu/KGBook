@@ -21,7 +21,7 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	public Long getMaxId() {
-		String query = BookSql.SELECT_MAX_ID + "USER";
+		String query = BookSql.SELECT_MAX_ID_FROM + "USER";
 		Long id = jdbcTemplate.queryForObject(query, Long.class);
 
 		return null != id ? id : 0;
