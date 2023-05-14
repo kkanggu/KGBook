@@ -12,4 +12,7 @@ public class BookSql {
 	public static String SELECT_MAX_ID_FROM = "SELECT MAX(id) FROM ";
 	public static String SELECT_USERS = "SELECT * FROM USER";
 	public static String SELECT_USER_BY_ID = "SELECT * FROM USER WHERE id = ?";
+	public static String CREATE_BOOK_OWNER_ORDER = "INSERT INTO BOOK_USER_OWN (isbn, user_id) VALUES (?, ?)";
+	public static String SELECT_BOOKS_USER_OWN = "SELECT isbn FROM BOOK_USER_OWN WHERE user_id = ? ORDER BY isbn";
+	public static String SELECT_USERS_BOOK_OWN = "SELECT user_id FROM BOOK_USER_OWN WHERE isbn = ? ORDER BY user_id";
 }
