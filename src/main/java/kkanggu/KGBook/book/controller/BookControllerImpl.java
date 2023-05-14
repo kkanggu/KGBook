@@ -33,6 +33,6 @@ public class BookControllerImpl implements BookController {
 	public List<BookEntity> findBooksUserOwn(long userId) {
 		List<Long> isbns = bookService.findIsbnByUserId(userId);
 
-		return bookService.findBooksUserOwn(isbns);
+		return bookService.findByIsbn(isbns);
 	}
 }

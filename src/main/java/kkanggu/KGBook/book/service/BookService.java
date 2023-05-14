@@ -39,7 +39,7 @@ public class BookService {
 	 * If user own 10K, then 10K query will execute
 	 * This can lower performance
 	 */
-	public List<BookEntity> findBooksUserOwn(List<Long> isbns) {
+	public List<BookEntity> findByIsbn(List<Long> isbns) {
 		List<BookEntity> books = new ArrayList<>();
 		for (Long isbn : isbns) {
 			BookEntity book = bookRepository.findByIsbn(isbn);
