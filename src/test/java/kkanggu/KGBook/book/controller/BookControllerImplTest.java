@@ -11,29 +11,37 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import kkanggu.KGBook.book.entity.BookEntity;
+import kkanggu.KGBook.book.repository.BookOwnerOrderRepository;
 import kkanggu.KGBook.book.repository.BookRepository;
 import kkanggu.KGBook.common.aws.ImageController;
+import kkanggu.KGBook.user.controller.UserController;
+import kkanggu.KGBook.user.entity.UserEntity;
 
 @SpringBootTest
 @ActiveProfiles("local")
 @Transactional
 class BookControllerImplTest {
-	private final BookController bookController;
 	private final BookRepository bookRepository;
+	private final BookController bookController;
+	private final UserController userController;
+	private final BookOwnerOrderRepository bookOwnerOrderRepository;
 	private final JdbcTemplate jdbcTemplate;
 	private final ImageController imageController;
 
 	@Autowired
-	public BookControllerImplTest(BookController bookController,
-								  BookRepository bookRepository,
+	public BookControllerImplTest(BookRepository bookRepository,
+								  BookController bookController,
+								  UserController userController,
+								  BookOwnerOrderRepository bookOwnerOrderRepository,
 								  JdbcTemplate jdbcTemplate,
 								  ImageController imageController) {
-		this.bookController = bookController;
 		this.bookRepository = bookRepository;
+		this.bookController = bookController;
+		this.userController = userController;
+		this.bookOwnerOrderRepository = bookOwnerOrderRepository;
 		this.jdbcTemplate = jdbcTemplate;
 		this.imageController = imageController;
 	}
@@ -59,11 +67,15 @@ class BookControllerImplTest {
 				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 
 		// given
-		Long isbn = bookRepository.saveBook(book);
+		Long isbn = bookController.saveBook(book);
 
 		// then
 		assertThat(isbn).isNotNull();
 		assertThat(isbn).isEqualTo(book.getIsbn());
+
+		BookEntity savedBook = bookRepository.findByIsbn(isbn);
+		boolean isDeleted = imageController.deleteImage(savedBook.getS3ImageUrl());
+		assertThat(isDeleted).isEqualTo(true);
 	}
 
 	@Test
@@ -108,5 +120,32 @@ class BookControllerImplTest {
 
 		boolean isDeleted = imageController.deleteImage(findBook.getS3ImageUrl());
 		assertThat(isDeleted).isEqualTo(true);
+	}
+
+	@Test
+	@DisplayName("특정 유저가 가지고 있는 서적을 가져옴")
+	void findBooksUserOwnTest() {
+		// given
+		insertBooksBeforeTest();
+		UserEntity user = new UserEntity(1L, "username", "pass", null, null, null, LocalDate.now());
+		Long userId = userController.saveUser(user);
+		for (int i = 0; i < 4; ++i) {
+			bookOwnerOrderRepository.saveBookUserOwn(1357924680130L + i, userId);
+		}
+
+		// when
+		List<BookEntity> books = bookController.findBooksUserOwn(userId);
+
+		// then
+		assertThat(books.size()).isEqualTo(4);
+		for (int i = 0; i < 4; ++i) {
+			assertThat(books.get(i).getIsbn()).isEqualTo(1357924680130L + i);
+		}
+
+		List<BookEntity> savedBooks = bookRepository.findAll();
+		for (BookEntity book : savedBooks) {
+			boolean isDeleted = imageController.deleteImage(book.getS3ImageUrl());
+			assertThat(isDeleted).isEqualTo(true);
+		}
 	}
 }

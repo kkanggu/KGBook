@@ -10,4 +10,6 @@ public interface BookController {
 	List<BookEntity> findAll();
 
 	BookEntity findByIsbn(long isbn);
+
+	List<BookEntity> findBooksUserOwn(long userId);
 }

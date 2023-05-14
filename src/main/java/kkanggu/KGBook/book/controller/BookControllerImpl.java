@@ -16,19 +16,23 @@ public class BookControllerImpl implements BookController {
 
 	@Override
 	public Long saveBook(BookEntity book) {
-		Long isbn = bookService.saveBook(book);
-		return isbn;
+		return bookService.saveBook(book);
 	}
 
 	@Override
 	public List<BookEntity> findAll() {
-		List<BookEntity> books = bookService.findAll();
-		return books;
+		return bookService.findAll();
 	}
 
 	@Override
 	public BookEntity findByIsbn(long isbn) {
-		BookEntity book = bookService.findByIsbn(isbn);
-		return book;
+		return bookService.findByIsbn(isbn);
+	}
+
+	@Override
+	public List<BookEntity> findBooksUserOwn(long userId) {
+		List<Long> isbns = bookService.findIsbnByUserId(userId);
+
+		return bookService.findBooksUserOwn(isbns);
 	}
 }
