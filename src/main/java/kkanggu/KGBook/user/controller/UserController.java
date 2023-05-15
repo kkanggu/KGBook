@@ -10,4 +10,6 @@ public interface UserController {
 	List<UserEntity> findAll();
 
 	UserEntity findById(Long id);
+
+	List<UserEntity> findUsersHaveBook(long isbn);
 }

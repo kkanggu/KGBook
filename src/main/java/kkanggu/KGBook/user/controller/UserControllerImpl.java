@@ -16,19 +16,23 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public Long saveUser(UserEntity user) {
-		Long id = userService.saveUser(user);
-		return id;
+		return userService.saveUser(user);
 	}
 
 	@Override
 	public List<UserEntity> findAll() {
-		List<UserEntity> users = userService.findAll();
-		return users;
+		return userService.findAll();
 	}
 
 	@Override
 	public UserEntity findById(Long id) {
-		UserEntity user = userService.findById(id);
-		return user;
+		return userService.findById(id);
+	}
+
+	@Override
+	public List<UserEntity> findUsersHaveBook(long isbn) {
+		List<Long> userIds = userService.findUserIdByIsbn(isbn);
+
+		return userService.findById(userIds);
 	}
 }
