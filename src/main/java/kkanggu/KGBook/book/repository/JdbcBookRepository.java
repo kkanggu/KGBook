@@ -33,21 +33,19 @@ public class JdbcBookRepository implements BookRepository {
 		}
 
 		Object[] params = {book.getIsbn(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
-				book.getDescription(), book.getOriginImageUrl(), s3ImageUrl};
+				book.getCreateDate(), book.getDescription(), book.getOriginImageUrl(), s3ImageUrl};
 		int rows = jdbcTemplate.update(BookSql.CREATE_BOOK, params);
 		return 1 == rows ? book.getIsbn() : null;
 	}
 
 	@Override
 	public List<BookEntity> findAll() {
-		List<BookEntity> books = jdbcTemplate.query(BookSql.SELECT_BOOKS, rowMapper());
-		return books;
+		return jdbcTemplate.query(BookSql.SELECT_BOOKS, rowMapper());
 	}
 
 	@Override
 	public BookEntity findByIsbn(Long isbn) {
-		BookEntity book = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), isbn);
-		return book;
+		return jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), isbn);
 	}
 
 	private RowMapper<BookEntity> rowMapper() {
@@ -59,6 +57,7 @@ public class JdbcBookRepository implements BookRepository {
 			book.setPublisher(rs.getString("publisher"));
 			LocalDate publishDate = rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate();
 			book.setPublishDate(publishDate);
+			book.setCreateDate(LocalDate.now());
 			book.setDescription(rs.getString("description"));
 			book.setOriginImageUrl(rs.getString("original_image_url"));
 			book.setS3ImageUrl(rs.getString("s3_image_url"));

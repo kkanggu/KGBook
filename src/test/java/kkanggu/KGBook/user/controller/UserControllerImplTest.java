@@ -108,8 +108,9 @@ class UserControllerImplTest {
 	@DisplayName("isbn을 이용하여 서적을 소유중인 유저 가져오기")
 	void findUsersHaveBookTest() {
 		// given
-		BookEntity book = new BookEntity(1357924680130L, "book", "author", "publisher", LocalDate.now(),
-				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = new BookEntity(1357924680130L, "book", "author", "publisher",
+				LocalDate.now(), LocalDate.now(),"description",
+				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 		Long isbn = bookRepository.saveBook(book);
 
 		UserEntity user = new UserEntity(null, "username", "pass", null, null, null, LocalDate.now());

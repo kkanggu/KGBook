@@ -46,7 +46,7 @@ class JdbcBookOwnerOrderRepositoryTest {
 		this.userController = userController;
 		this.imageController = imageController;
 		this.jdbcBookOwnerOrderRepository = jdbcBookOwnerOrderRepository;
-		book = new BookEntity(1L, "title", "author", "publisher", LocalDate.now(),
+		book = new BookEntity(1L, "title", "author", "publisher", LocalDate.now(), LocalDate.now(),
 				null, "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 		users = new ArrayList<>();
 		users.add(new UserEntity(1L, "username", "pass", null, null, null, LocalDate.now()));

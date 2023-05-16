@@ -112,8 +112,9 @@ class UserServiceTest {
 		UserEntity user = new UserEntity(null, "username", "pass", null, null, null, LocalDate.now());
 		Long userId = userRepository.saveUser(user);
 
-		BookEntity book = new BookEntity(1357924680130L, "book", "author", "publisher", LocalDate.now(),
-				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = new BookEntity(1357924680130L, "book", "author", "publisher",
+				LocalDate.now(), LocalDate.now(),"description",
+				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 		bookRepository.saveBook(book);
 
 		bookOwnerOrderRepository.saveBookUserOwn(1357924680130L, userId);

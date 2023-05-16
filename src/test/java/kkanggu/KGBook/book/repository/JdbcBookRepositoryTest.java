@@ -37,8 +37,9 @@ class JdbcBookRepositoryTest {
 
 	void insertBooksBeforeTest() {
 		for (int i = 0; i < 4; ++i) {
-			BookEntity book = new BookEntity(1357924680130L + i, "book" + (i + 1), "author" + (i + 1), "publisher", LocalDate.now(),
-					"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+			BookEntity book = new BookEntity(1357924680130L + i, "book" + (i + 1), "author" + (i + 1), "publisher",
+					LocalDate.now(), LocalDate.now(),"description",
+					"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 			jdbcBookRepository.saveBook(book);
 		}
 	}
@@ -52,8 +53,9 @@ class JdbcBookRepositoryTest {
 	@DisplayName("서적 저장")
 	void saveBookTest() {
 		// given
-		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
-				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher",
+				LocalDate.now(), LocalDate.now(), "description",
+				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 
 		// when
 		long isbn = jdbcBookRepository.saveBook(book);
@@ -97,8 +99,9 @@ class JdbcBookRepositoryTest {
 	@DisplayName("isbn을 이용하여 서적 가져오기")
 	void findByIsbnTest() {
 		// given
-		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher", LocalDate.now(),
-				"description", "https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher",
+				LocalDate.now(), LocalDate.now(),"description",
+				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 		Long isbn = jdbcBookRepository.saveBook(book);
 
 		// when
