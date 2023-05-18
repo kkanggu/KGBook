@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+    <head th:replace="fragments/admin/head :: headFragment">
+        <title layout:title-pattern="Admin - ${pageTitle}"></title>
+    </head>
+
+    <body>
+        <header th:replace="fragments/admin/header :: headerFragment"></header>
+
+        <hr class="my-4">
+
+        <header th:replace="fragments/admin/tabs :: tabFragment"></header>
+
+        <div layout:fragment="content"></div>
+
+        <footer th:replace="fragments/admin/footer :: footerFragment"></footer>
+    </body>
+</html>
