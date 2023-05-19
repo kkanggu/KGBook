@@ -4,8 +4,8 @@
 
     <div class="tabSelection" th:fragment="tabFragment">
         <ul>
-            <li><a th:class="${activeTab == 'bookManage' ? 'active' : ''}" th:href="@{/admin/bookManage}">Book</a></li>
-            <li><a th:class="${activeTab == 'userManage' ? 'active' : ''}" th:href="@{/admin/userManage}">User</a></li>
+            <li><a th:class="${activeTab == 'bookManage' ? 'active' : ''}" th:href="@{/admin/books}">Book</a></li>
+            <li><a th:class="${activeTab == 'userManage' ? 'active' : ''}" th:href="@{/admin/users}">User</a></li>
         </ul>
     </div>
 </html>

@@ -14,7 +14,9 @@
 
         <header th:replace="fragments/admin/tabs :: tabFragment"></header>
 
-        <div layout:fragment="content"></div>
+        <div class="content">
+            <div layout:fragment="content"></div>
+        </div>
 
         <footer th:replace="fragments/admin/footer :: footerFragment"></footer>
     </body>

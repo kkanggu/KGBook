@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kkanggu.KGBook.admin.dto.ApiBookDto;
 import kkanggu.KGBook.book.controller.BookController;
+import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
 
 @Service
@@ -80,6 +81,7 @@ public class AdminService {
 					DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 					LocalDate date = LocalDate.parse(apiBookDto.getPubdate(), inputFormatter);
 					book.setPublishDate(date);
+					book.setCreateDate(LocalDate.now());
 
 					return book;
 				})
@@ -88,5 +90,23 @@ public class AdminService {
 
 	public void saveBooks(List<BookEntity> books) {
 		books.forEach(bookController::saveBook);
+	}
+
+	public List<RenderBookDto> findAll() {
+		List<BookEntity> books = bookController.findAll();
+
+		return books.stream().map(book -> {
+					RenderBookDto renderBookDto = new RenderBookDto();
+					renderBookDto.setIsbn(book.getIsbn());
+					renderBookDto.setTitle(book.getTitle());
+					renderBookDto.setAuthor(book.getAuthor());
+					renderBookDto.setPublisher(book.getPublisher());
+					renderBookDto.setPublishDate(book.getPublishDate());
+					renderBookDto.setDescription(book.getDescription());
+					renderBookDto.setImageUrl(book.getS3ImageUrl());
+
+					return renderBookDto;
+				})
+				.toList();
 	}
 }

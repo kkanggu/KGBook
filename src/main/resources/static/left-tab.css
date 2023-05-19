@@ -17,8 +17,8 @@ header {
 }
 
 .content {
-    display:inline-block;
-    margin-left: 200px;
+    flex-grow: 1;
+    margin-left: 160px;
 }
 
 .tabSelection ul {
@@ -45,4 +45,15 @@ header {
 
 .active {
     background-color: #ccc;
+}
+
+.table {
+    border-collapse: collapse;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.table th, table td {
+    border: 1px solid black;
+    padding: 8px;
 }
