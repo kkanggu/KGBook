@@ -1,11 +1,16 @@
 package kkanggu.KGBook.admin.controller;
 
-import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import lombok.extern.slf4j.Slf4j;
 
-import kkanggu.KGBook.book.entity.BookEntity;
-
-public interface AdminController {
-	List<BookEntity> searchBooks(String keyword, boolean searchRecent);
-
-	void saveBooks(List<BookEntity> books);
+@Slf4j
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+	@GetMapping("")
+	public String main() {
+		return "admin/main";
+	}
 }
