@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.XML;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,9 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kkanggu.KGBook.admin.dto.ApiBookDto;
 import kkanggu.KGBook.book.controller.BookController;
 import kkanggu.KGBook.book.entity.BookEntity;
@@ -35,19 +35,16 @@ class AdminServiceTest {
 	private final BookController bookController;
 	private final ImageController imageController;
 	private final JdbcTemplate jdbcTemplate;
-	private final ObjectMapper objectMapper;
 
 	@Autowired
 	public AdminServiceTest(AdminService adminService,
 							BookController bookController,
 							ImageController imageController,
-							JdbcTemplate jdbcTemplate,
-							ObjectMapper objectMapper) {
+							JdbcTemplate jdbcTemplate) {
 		this.adminService = adminService;
 		this.bookController = bookController;
 		this.imageController = imageController;
 		this.jdbcTemplate = jdbcTemplate;
-		this.objectMapper = objectMapper;
 	}
 
 	@BeforeEach
@@ -59,7 +56,7 @@ class AdminServiceTest {
 	@DisplayName("Naver API를 이용하여 서적 정보를 문자열로 가져옴 - 정확도")
 	void fetchBookFromNaverApiAccuracy() {
 		// given
-		String keyword = "레디스";
+		String keyword = "자바";
 
 		// when
 		ResponseEntity<String> apiResponseEntity = adminService.fetchBookFromNaverApi(keyword, false);
@@ -70,9 +67,9 @@ class AdminServiceTest {
 
 	@Test
 	@DisplayName("Naver API를 이용하여 서적 정보를 문자열로 가져옴 - 최신")
-	void fetchBookFromNaverApiRecent() throws JsonProcessingException {
+	void fetchBookFromNaverApiRecent() {
 		// given
-		String keyword = "레디스";
+		String keyword = "자바";
 
 		// when
 		ResponseEntity<String> apiResponseEntity = adminService.fetchBookFromNaverApi(keyword, true);
@@ -81,9 +78,13 @@ class AdminServiceTest {
 		assertThat(apiResponseEntity.getStatusCode().is2xxSuccessful()).isEqualTo(true);
 
 		List<String> pubdates = new ArrayList<>();
-		JsonNode jsonNodes = objectMapper.readTree(apiResponseEntity.getBody()).get("items");
-		for (JsonNode jsonNode : jsonNodes) {
-			pubdates.add(jsonNode.get("pubdate").asText());
+		JSONArray jsonArray = XML.toJSONObject(apiResponseEntity.getBody())
+				.getJSONObject("rss")
+				.getJSONObject("channel")
+				.getJSONArray("item");
+		for (Object object : jsonArray) {
+			JSONObject jsonObject = (JSONObject) object;
+			pubdates.add(jsonObject.get("pubdate").toString());
 		}
 		List<String> sortedPubDates = new ArrayList<>(pubdates);
 		sortedPubDates.sort(Collections.reverseOrder());
@@ -92,32 +93,32 @@ class AdminServiceTest {
 	}
 
 	@Test
-	@DisplayName("Json을 ApiBookDto로 변환")
-	void convertJsonToApiBookDto() throws IOException {
+	@DisplayName("Xml을 ApiBookDto로 변환")
+	void convertXmlToApiBookDto() throws IOException {
 		// given
-		String booksJson = Files.readString(Path.of("src", "test", "resources", "api-string-data.json"));
+		String booksXml = Files.readString(Path.of("src", "test", "resources", "api-string-data.xml"));
 
 		// when
-		List<ApiBookDto> apiBookDtos = adminService.convertJsonToApiBookDto(booksJson);
+		List<ApiBookDto> apiBookDtos = adminService.convertXmlToApiBookDto(booksXml);
 
 		// then
 		assertThat(apiBookDtos).isNotNull();
-		assertThat(apiBookDtos.size()).isEqualTo(3);
+		assertThat(apiBookDtos.size()).isEqualTo(10);
 	}
 
 	@Test
 	@DisplayName("ApiBookDto를 BookEntity로 변환")
 	void convertApiBookDtoToBookEntity() throws IOException {
 		// given
-		String booksJson = Files.readString(Path.of("src", "test", "resources", "api-string-data.json"));
-		List<ApiBookDto> apiBookDtos = adminService.convertJsonToApiBookDto(booksJson);
+		String booksXml = Files.readString(Path.of("src", "test", "resources", "api-string-data.xml"));
+		List<ApiBookDto> apiBookDtos = adminService.convertXmlToApiBookDto(booksXml);
 
 		// when
 		List<BookEntity> books = adminService.convertApiBookDtoToBookEntity(apiBookDtos);
 
 		// then
 		assertThat(books).isNotNull();
-		assertThat(books.size()).isEqualTo(3);
+		assertThat(books.size()).isEqualTo(10);
 	}
 
 	@Test
@@ -127,7 +128,7 @@ class AdminServiceTest {
 		List<BookEntity> books = new ArrayList<>();
 		for (int i = 0; i < 4; ++i) {
 			BookEntity book = new BookEntity(1357924680130L + i, "book" + (i + 1), "author" + (i + 1), "publisher",
-					LocalDate.now(), LocalDate.now(),"description",
+					LocalDate.now(), LocalDate.now(), "description",
 					"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
 			books.add(book);
 		}

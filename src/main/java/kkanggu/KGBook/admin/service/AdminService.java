@@ -6,19 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.XML;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kkanggu.KGBook.admin.dto.ApiBookDto;
 import kkanggu.KGBook.book.controller.BookController;
 import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class AdminService {
 	private final BookController bookController;
 	private final WebClient webClient;
@@ -37,7 +42,7 @@ public class AdminService {
 	 * This must be fixed
 	 */
 	public ResponseEntity<String> fetchBookFromNaverApi(String keyword, boolean searchRecent) {
-		String naverBookApiUrl = "https://openapi.naver.com/v1/search/book.json?query=" + keyword;
+		String naverBookApiUrl = "https://openapi.naver.com/v1/search/book_adv.xml?d_catg=280&d_titl=" + keyword;
 		if (searchRecent) {
 			naverBookApiUrl += "&sort=date";
 		}
@@ -50,17 +55,25 @@ public class AdminService {
 				.block();
 	}
 
-	public List<ApiBookDto> convertJsonToApiBookDto(String booksJson) {
+	public List<ApiBookDto> convertXmlToApiBookDto(String booksXml) {
 		List<ApiBookDto> apiBookDtos = new ArrayList<>();
 
 		try {
-			JsonNode jsonNodes = objectMapper.readTree(booksJson).get("items");
+			JSONArray jsonArray = XML.toJSONObject(booksXml)
+					.getJSONObject("rss")
+					.getJSONObject("channel")
+					.getJSONArray("item");
 
-			for (JsonNode jsonNode : jsonNodes) {
-				ApiBookDto apiBookDto = objectMapper.treeToValue(jsonNode, ApiBookDto.class);
+			for (Object object : jsonArray) {
+				ApiBookDto apiBookDto = objectMapper.readValue(object.toString(), ApiBookDto.class);
 				apiBookDtos.add(apiBookDto);
 			}
+		} catch (JSONException e) {
+			log.warn("Parsing API Failed : {}", booksXml, e);
+		} catch (JsonMappingException e) {
+			log.warn("API Json Mapping Failed : {}", booksXml, e);
 		} catch (JsonProcessingException e) {
+			log.warn("API Json Processing Failed : {}", booksXml, e);
 			throw new RuntimeException(e);
 		}
 
