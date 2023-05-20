@@ -9,9 +9,12 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.XML;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -20,6 +23,7 @@ import kkanggu.KGBook.admin.dto.ApiBookDto;
 import kkanggu.KGBook.book.controller.BookController;
 import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
+import kkanggu.KGBook.common.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -28,31 +32,31 @@ public class AdminService {
 	private final BookController bookController;
 	private final WebClient webClient;
 	private final ObjectMapper objectMapper;
+	private final Keys keys;
 
 	public AdminService(BookController bookController,
 						WebClient webClient,
-						ObjectMapper objectMapper) {
+						ObjectMapper objectMapper,
+						Keys keys) {
 		this.bookController = bookController;
 		this.webClient = webClient;
 		this.objectMapper = objectMapper;
+		this.keys = keys;
 	}
 
-	/**
-	 * Currently WebClient execute with Block, Synchronous.
-	 * This must be fixed
-	 */
 	public ResponseEntity<String> fetchBookFromNaverApi(String keyword, boolean searchRecent) {
 		String naverBookApiUrl = "https://openapi.naver.com/v1/search/book_adv.xml?d_catg=280&d_titl=" + keyword;
 		if (searchRecent) {
 			naverBookApiUrl += "&sort=date";
 		}
 
-		return webClient.get()
-				.uri(naverBookApiUrl)
-				.accept(MediaType.APPLICATION_JSON)
-				.retrieve()
-				.toEntity(String.class)
-				.block();
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.set("X-Naver-Client-Id", keys.getNaverClientId());
+		httpHeaders.set("X-Naver-Client-Secret", keys.getNaverClientSecret());
+		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+
+		return restTemplate.exchange(naverBookApiUrl, HttpMethod.GET, entity, String.class);
 	}
 
 	public List<ApiBookDto> convertXmlToApiBookDto(String booksXml) {
