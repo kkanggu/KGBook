@@ -15,7 +15,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,16 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AdminService {
 	private final BookController bookController;
-	private final WebClient webClient;
 	private final ObjectMapper objectMapper;
 	private final Keys keys;
 
 	public AdminService(BookController bookController,
-						WebClient webClient,
 						ObjectMapper objectMapper,
 						Keys keys) {
 		this.bookController = bookController;
-		this.webClient = webClient;
 		this.objectMapper = objectMapper;
 		this.keys = keys;
 	}
