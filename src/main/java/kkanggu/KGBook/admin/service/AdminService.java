@@ -108,18 +108,26 @@ public class AdminService {
 	public List<RenderBookDto> findAll() {
 		List<BookEntity> books = bookController.findAll();
 
-		return books.stream().map(book -> {
-					RenderBookDto renderBookDto = new RenderBookDto();
-					renderBookDto.setIsbn(book.getIsbn());
-					renderBookDto.setTitle(book.getTitle());
-					renderBookDto.setAuthor(book.getAuthor());
-					renderBookDto.setPublisher(book.getPublisher());
-					renderBookDto.setPublishDate(book.getPublishDate());
-					renderBookDto.setDescription(book.getDescription());
-					renderBookDto.setImageUrl(book.getS3ImageUrl());
-
-					return renderBookDto;
-				})
+		return books.stream().map(AdminService::convertBookEntityToRenderBookDto)
 				.toList();
+	}
+
+	public RenderBookDto findByIsbn(long isbn) {
+		BookEntity book = bookController.findByIsbn(isbn);
+
+		return convertBookEntityToRenderBookDto(book);
+	}
+
+	private static RenderBookDto convertBookEntityToRenderBookDto(BookEntity book) {
+		RenderBookDto renderBookDto = new RenderBookDto();
+		renderBookDto.setIsbn(book.getIsbn());
+		renderBookDto.setTitle(book.getTitle());
+		renderBookDto.setAuthor(book.getAuthor());
+		renderBookDto.setPublisher(book.getPublisher());
+		renderBookDto.setPublishDate(book.getPublishDate());
+		renderBookDto.setDescription(book.getDescription());
+		renderBookDto.setImageUrl(book.getS3ImageUrl());
+
+		return renderBookDto;
 	}
 }
