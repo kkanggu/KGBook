@@ -87,11 +87,12 @@
         <hr class="my-4">
 
         <div style="display: flex; justify-content: center;">
-            <div>
+            <form th:method="${isEdit ? 'post' : 'get'}"
+                  th:action="@{${'/admin/book/{isbn}' + (isEdit ? '' : '/edit')}(isbn=${isbn})}">
                 <button class="button"
-                        type="button"
-                        th:text="#{button.edit}"></button>
-            </div>
+                        type="submit"
+                        th:text="${isEdit} ? #{button.save} : #{button.edit}"></button>
+            </form>
             <div>
                 <button class="button"
                         th:onclick="|location.href='@{/admin/books}'|"
