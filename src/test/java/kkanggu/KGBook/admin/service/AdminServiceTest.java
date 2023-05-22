@@ -127,9 +127,16 @@ class AdminServiceTest {
 		// given
 		List<BookEntity> books = new ArrayList<>();
 		for (int i = 0; i < 4; ++i) {
-			BookEntity book = new BookEntity(1357924680130L + i, "book" + (i + 1), "author" + (i + 1), "publisher",
-					LocalDate.now(), LocalDate.now(), "description",
-					"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+			BookEntity book = BookEntity.builder()
+					.isbn(1357924680130L + i)
+					.title("book" + (i + 1))
+					.author("author" + (i + 1))
+					.publisher("publisher")
+					.publishDate(LocalDate.now())
+					.createDate(LocalDate.now())
+					.description("description")
+					.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+					.build();
 			books.add(book);
 		}
 

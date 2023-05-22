@@ -57,20 +57,16 @@ public class JdbcBookRepository implements BookRepository {
 	}
 
 	private RowMapper<BookEntity> rowMapper() {
-		return (rs, rowNum) -> {
-			BookEntity book = new BookEntity();
-			book.setIsbn(rs.getLong("isbn"));
-			book.setTitle(rs.getString("title"));
-			book.setAuthor(rs.getString("author"));
-			book.setPublisher(rs.getString("publisher"));
-			LocalDate publishDate = rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate();
-			book.setPublishDate(publishDate);
-			book.setCreateDate(LocalDate.now());
-			book.setDescription(rs.getString("description"));
-			book.setOriginImageUrl(rs.getString("original_image_url"));
-			book.setS3ImageUrl(rs.getString("s3_image_url"));
-
-			return book;
-		};
+		return (rs, rowNum) -> BookEntity.builder()
+				.isbn(rs.getLong("isbn"))
+				.title(rs.getString("title"))
+				.author(rs.getString("author"))
+				.publisher(rs.getString("publisher"))
+				.publishDate(rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate())
+				.createDate(LocalDate.now())
+				.description(rs.getString("description"))
+				.originImageUrl(rs.getString("original_image_url"))
+				.s3ImageUrl(rs.getString("s3_image_url"))
+				.build();
 	}
 }

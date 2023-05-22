@@ -83,20 +83,19 @@ public class AdminService {
 	public List<BookEntity> convertApiBookDtoToBookEntity(List<ApiBookDto> apiBookDtos) {
 		return apiBookDtos.stream()
 				.map(apiBookDto -> {
-					BookEntity book = new BookEntity();
-					book.setIsbn(apiBookDto.getIsbn());
-					book.setTitle(apiBookDto.getTitle());
-					book.setAuthor(apiBookDto.getAuthor());
-					book.setPublisher(apiBookDto.getPublisher());
-					book.setDescription(apiBookDto.getDescription());
-					book.setOriginImageUrl(apiBookDto.getImage());
-
 					DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 					LocalDate date = LocalDate.parse(apiBookDto.getPubdate(), inputFormatter);
-					book.setPublishDate(date);
-					book.setCreateDate(LocalDate.now());
 
-					return book;
+					return BookEntity.builder()
+							.isbn(apiBookDto.getIsbn())
+							.title(apiBookDto.getTitle())
+							.author(apiBookDto.getAuthor())
+							.publisher(apiBookDto.getPublisher())
+							.publishDate(date)
+							.createDate(LocalDate.now())
+							.description(apiBookDto.getDescription())
+							.originImageUrl(apiBookDto.getImage())
+							.build();
 				})
 				.collect(Collectors.toList());
 	}

@@ -2,11 +2,13 @@ package kkanggu.KGBook.book.entity;
 
 import java.time.LocalDate;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class BookEntity {
 	private Long isbn;
 	private String title;
@@ -18,11 +20,7 @@ public class BookEntity {
 	private String originImageUrl;
 	private String s3ImageUrl;
 
-	public BookEntity() {
-	}
-
-	public BookEntity(Long isbn, String title, String author, String publisher, LocalDate publishDate,
-					  LocalDate createDate, String description, String originImageUrl, String s3ImageUrl) {
+	public BookEntity(Long isbn, String title, String author, String publisher, LocalDate publishDate, LocalDate createDate, String description, String originImageUrl, String s3ImageUrl) {
 		this.isbn = isbn;
 		this.title = title;
 		this.author = author;

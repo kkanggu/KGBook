@@ -37,9 +37,15 @@ class JdbcBookRepositoryTest {
 
 	void insertBooksBeforeTest() {
 		for (int i = 0; i < 4; ++i) {
-			BookEntity book = new BookEntity(1357924680130L + i, "book" + (i + 1), "author" + (i + 1), "publisher",
-					LocalDate.now(), LocalDate.now(),"description",
-					"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+			BookEntity book = BookEntity.builder()
+					.isbn(1357924680130L + i)
+					.title("book" + (i + 1))
+					.author("author" + (i + 1))
+					.publisher("publisher")
+					.publishDate(LocalDate.now()).createDate(LocalDate.now())
+					.description("description")
+					.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+					.build();
 			jdbcBookRepository.saveBook(book);
 		}
 	}
@@ -53,9 +59,16 @@ class JdbcBookRepositoryTest {
 	@DisplayName("서적 저장")
 	void saveBookTest() {
 		// given
-		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher",
-				LocalDate.now(), LocalDate.now(), "description",
-				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = BookEntity.builder()
+				.isbn(1357924680134L)
+				.title("title")
+				.author("author")
+				.publisher("publisher")
+				.publishDate(LocalDate.now())
+				.createDate(LocalDate.now())
+				.description("description")
+				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+				.build();
 
 		// when
 		long isbn = jdbcBookRepository.saveBook(book);
@@ -99,9 +112,16 @@ class JdbcBookRepositoryTest {
 	@DisplayName("isbn을 이용하여 서적 가져오기")
 	void findByIsbnTest() {
 		// given
-		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher",
-				LocalDate.now(), LocalDate.now(),"description",
-				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = BookEntity.builder()
+				.isbn(1357924680134L)
+				.title("title")
+				.author("author")
+				.publisher("publisher")
+				.publishDate(LocalDate.now())
+				.createDate(LocalDate.now())
+				.description("description")
+				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+				.build();
 		Long isbn = jdbcBookRepository.saveBook(book);
 
 		// when
@@ -117,19 +137,16 @@ class JdbcBookRepositoryTest {
 	}
 
 	RowMapper<BookEntity> rowMapper() {
-		return (rs, rowNum) -> {
-			BookEntity book = new BookEntity();
-			book.setIsbn(rs.getLong("isbn"));
-			book.setTitle(rs.getString("title"));
-			book.setAuthor(rs.getString("author"));
-			book.setPublisher(rs.getString("publisher"));
-			LocalDate publishDate = rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate();
-			book.setPublishDate(publishDate);
-			book.setDescription(rs.getString("description"));
-			book.setOriginImageUrl(rs.getString("original_image_url"));
-			book.setS3ImageUrl(rs.getString("s3_image_url"));
-
-			return book;
-		};
+		return (rs, rowNum) -> BookEntity.builder()
+				.isbn(rs.getLong("isbn"))
+				.title(rs.getString("title"))
+				.author(rs.getString("author"))
+				.publisher(rs.getString("publisher"))
+				.publishDate(rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate())
+				.createDate(LocalDate.now())
+				.description(rs.getString("description"))
+				.originImageUrl(rs.getString("original_image_url"))
+				.s3ImageUrl(rs.getString("s3_image_url"))
+				.build();
 	}
 }

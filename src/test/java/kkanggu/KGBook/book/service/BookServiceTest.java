@@ -57,9 +57,15 @@ class BookServiceTest {
 
 	void insertBooksBeforeTest() {
 		for (int i = 0; i < 4; ++i) {
-			BookEntity book = new BookEntity(1357924680130L + i, "book" + (i + 1), "author" + (i + 1), "publisher",
-					LocalDate.now(), LocalDate.now(), "description",
-					"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+			BookEntity book = BookEntity.builder()
+					.isbn(1357924680130L + i)
+					.title("book" + (i + 1))
+					.author("author" + (i + 1))
+					.publisher("publisher")
+					.publishDate(LocalDate.now()).createDate(LocalDate.now())
+					.description("description")
+					.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+					.build();
 			bookRepository.saveBook(book);
 		}
 	}
@@ -68,9 +74,16 @@ class BookServiceTest {
 	@DisplayName("서적 저장")
 	void saveBook() {
 		// when
-		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher",
-				LocalDate.now(), LocalDate.now(), "description",
-				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = BookEntity.builder()
+				.isbn(1357924680134L)
+				.title("title")
+				.author("author")
+				.publisher("publisher")
+				.publishDate(LocalDate.now())
+				.createDate(LocalDate.now())
+				.description("description")
+				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+				.build();
 
 		// given
 		Long isbn = bookService.saveBook(book);
@@ -106,9 +119,16 @@ class BookServiceTest {
 	@DisplayName("DB에서 isbn을 통해 서적을 가져옴")
 	void findByIsbnTest() {
 		// given
-		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher",
-				LocalDate.now(), LocalDate.now(), "description",
-				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = BookEntity.builder()
+				.isbn(1357924680134L)
+				.title("title")
+				.author("author")
+				.publisher("publisher")
+				.publishDate(LocalDate.now())
+				.createDate(LocalDate.now())
+				.description("description")
+				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+				.build();
 		bookRepository.saveBook(book);
 
 		// when
@@ -186,9 +206,16 @@ class BookServiceTest {
 	@DisplayName("BookEntity를 RenderBookDto로 변환")
 	void convertToRenderBookDto() {
 		// given
-		BookEntity book = new BookEntity(1357924680134L, "title", "author", "publisher",
-				LocalDate.now(), LocalDate.now(), "description",
-				"https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg", null);
+		BookEntity book = BookEntity.builder()
+				.isbn(1357924680134L)
+				.title("title")
+				.author("author")
+				.publisher("publisher")
+				.publishDate(LocalDate.now())
+				.createDate(LocalDate.now())
+				.description("description")
+				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+				.build();
 
 		// when
 		RenderBookDto renderBookDto = bookService.convertToRenderBookDto(book);
