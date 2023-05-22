@@ -122,15 +122,14 @@ public class AdminService {
 	}
 
 	private static RenderBookDto convertBookEntityToRenderBookDto(BookEntity book) {
-		RenderBookDto renderBookDto = new RenderBookDto();
-		renderBookDto.setIsbn(book.getIsbn());
-		renderBookDto.setTitle(book.getTitle());
-		renderBookDto.setAuthor(book.getAuthor());
-		renderBookDto.setPublisher(book.getPublisher());
-		renderBookDto.setPublishDate(book.getPublishDate());
-		renderBookDto.setDescription(book.getDescription());
-		renderBookDto.setImageUrl(book.getS3ImageUrl());
-
-		return renderBookDto;
+		return RenderBookDto.builder()
+				.isbn(book.getIsbn())
+				.title(book.getTitle())
+				.author(book.getAuthor())
+				.publisher(book.getPublisher())
+				.publishDate(book.getPublishDate())
+				.description(book.getDescription())
+				.imageUrl(book.getS3ImageUrl())
+				.build();
 	}
 }

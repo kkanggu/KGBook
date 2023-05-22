@@ -51,22 +51,15 @@ public class BookService {
 	}
 
 	public RenderBookDto convertToRenderBookDto(BookEntity book) {
-		RenderBookDto renderBookDto = new RenderBookDto();
-
-		renderBookDto.setIsbn(book.getIsbn());
-		renderBookDto.setTitle(book.getTitle());
-		renderBookDto.setAuthor(book.getAuthor());
-		renderBookDto.setPublisher(book.getPublisher());
-		renderBookDto.setPublishDate(book.getPublishDate());
-		renderBookDto.setDescription(book.getDescription());
-
-		if (null == book.getS3ImageUrl()) {
-			renderBookDto.setImageUrl(book.getOriginImageUrl());
-		} else {
-			renderBookDto.setImageUrl(book.getS3ImageUrl());
-		}
-
-		return renderBookDto;
+		return RenderBookDto.builder()
+				.isbn(book.getIsbn())
+				.title(book.getTitle())
+				.author(book.getAuthor())
+				.publisher(book.getPublisher())
+				.publishDate(book.getPublishDate())
+				.description(book.getDescription())
+				.imageUrl(null == book.getS3ImageUrl() ? book.getOriginImageUrl() : book.getS3ImageUrl())
+				.build();
 	}
 
 	public void updateBook(RenderBookDto renderBookDto) {

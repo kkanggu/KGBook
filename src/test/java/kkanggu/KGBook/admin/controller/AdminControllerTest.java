@@ -46,8 +46,9 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("서적이 존재할 때 서적 상세 조회")
 	void bookPass() throws Exception {
-		RenderBookDto renderBookDto = new RenderBookDto();
-		renderBookDto.setIsbn(1234L);
+		RenderBookDto renderBookDto = RenderBookDto.builder()
+				.isbn(1234L)
+				.build();
 
 		when(adminService.findByIsbn(renderBookDto.getIsbn())).thenReturn(renderBookDto);
 
