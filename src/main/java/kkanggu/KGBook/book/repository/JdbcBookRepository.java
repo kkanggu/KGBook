@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.common.aws.ImageController;
 import kkanggu.KGBook.sql.BookSql;
@@ -46,6 +47,13 @@ public class JdbcBookRepository implements BookRepository {
 	@Override
 	public BookEntity findByIsbn(Long isbn) {
 		return jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), isbn);
+	}
+
+	@Override
+	public void updateBook(RenderBookDto book) {
+		Object[] params = {book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
+				book.getDescription(), book.getIsbn()};
+		jdbcTemplate.update(BookSql.UPDATE_BOOK, params);
 	}
 
 	private RowMapper<BookEntity> rowMapper() {

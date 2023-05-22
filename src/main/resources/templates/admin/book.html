@@ -16,7 +16,9 @@
                  height="400px">
         </div>
         <!-- 이미지 우측에 서적 상세 정보 출력 -->
-        <div class="specific_view">
+        <form class="specific_view"
+              th:method="${isEdit ? 'post' : 'get'}"
+              th:action="@{${'/admin/book/{isbn}' + (isEdit ? '' : '/edit')}(isbn=${isbn})}">
             <!-- ISBN, 고정값 -->
             <div class="specific_view_frame">
                 <div class="specific_view_left_tag" th:text="#{book.isbn}"></div>
@@ -33,7 +35,7 @@
                               id="title"
                               th:field="*{title}"
                               placeholder="서적명"
-                              disabled></textarea>
+                              th:disabled="${!isEdit}"></textarea>
                 </div>
             </div>
             <!-- 저자 -->
@@ -45,7 +47,7 @@
                            id="author"
                            th:field="*{author}"
                            placeholder="저자"
-                           disabled>
+                           th:disabled="${!isEdit}">
                 </div>
             </div>
             <!-- 출판사 -->
@@ -57,7 +59,7 @@
                            id="publisher"
                            th:field="*{publisher}"
                            placeholder="출판사"
-                           disabled>
+                           th:disabled="${!isEdit}">
                 </div>
             </div>
             <!-- 발행일 -->
@@ -67,8 +69,9 @@
                     <input class="specific_view_right_input"
                            type="date"
                            id="publishDate"
+                           name="publishDate"
                            th:value="*{publishDate}"
-                           disabled>
+                           th:disabled="${!isEdit}">
                 </div>
             </div>
             <!-- 서적 상세 설명 -->
@@ -79,27 +82,40 @@
                               id="description"
                               th:field="*{description}"
                               placeholder="상세 설명"
-                              disabled></textarea>
+                              th:disabled="${!isEdit}"></textarea>
                 </div>
             </div>
-        </div>
 
-        <hr class="my-4">
+            <hr class="my-4">
 
-        <div style="display: flex; justify-content: center;">
-            <form th:method="${isEdit ? 'post' : 'get'}"
-                  th:action="@{${'/admin/book/{isbn}' + (isEdit ? '' : '/edit')}(isbn=${isbn})}">
+            <div style="display: flex; justify-content: center;">
                 <button class="button"
                         type="submit"
                         th:text="${isEdit} ? #{button.save} : #{button.edit}"></button>
-            </form>
-            <div>
                 <button class="button"
                         th:onclick="|location.href='@{/admin/books}'|"
                         type="button"
                         th:text="#{button.cancel}"
                         style="margin-left: 10px;"></button>
             </div>
-        </div>
+        </form>
+
+<!--        <hr class="my-4">-->
+
+<!--        <div style="display: flex; justify-content: center;">-->
+<!--            <form th:method="${isEdit ? 'post' : 'get'}"-->
+<!--                  th:action="@{${'/admin/book/{isbn}' + (isEdit ? '' : '/edit')}(isbn=${isbn})}">-->
+<!--                <button class="button"-->
+<!--                        type="submit"-->
+<!--                        th:text="${isEdit} ? #{button.save} : #{button.edit}"></button>-->
+<!--            </form>-->
+<!--            <div>-->
+<!--                <button class="button"-->
+<!--                        th:onclick="|location.href='@{/admin/books}'|"-->
+<!--                        type="button"-->
+<!--                        th:text="#{button.cancel}"-->
+<!--                        style="margin-left: 10px;"></button>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 </html>

@@ -118,6 +118,10 @@ public class AdminService {
 		return convertBookEntityToRenderBookDto(book);
 	}
 
+	public void updateBook(RenderBookDto renderBookDto) {
+		bookController.updateBook(renderBookDto);
+	}
+
 	private static RenderBookDto convertBookEntityToRenderBookDto(BookEntity book) {
 		RenderBookDto renderBookDto = new RenderBookDto();
 		renderBookDto.setIsbn(book.getIsbn());

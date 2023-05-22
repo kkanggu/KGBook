@@ -68,4 +68,8 @@ public class BookService {
 
 		return renderBookDto;
 	}
+
+	public void updateBook(RenderBookDto renderBookDto) {
+		bookRepository.updateBook(renderBookDto);
+	}
 }

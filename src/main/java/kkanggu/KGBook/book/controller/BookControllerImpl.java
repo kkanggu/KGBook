@@ -41,4 +41,9 @@ public class BookControllerImpl implements BookController {
 	public RenderBookDto convertToRenderBookDto(BookEntity book) {
 		return bookService.convertToRenderBookDto(book);
 	}
+
+	@Override
+	public void updateBook(RenderBookDto renderBookDto) {
+		bookService.updateBook(renderBookDto);
+	}
 }

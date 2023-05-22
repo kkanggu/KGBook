@@ -15,4 +15,6 @@ public interface BookController {
 	List<BookEntity> findBooksUserOwn(long userId);
 
 	RenderBookDto convertToRenderBookDto(BookEntity book);
+
+	void updateBook(RenderBookDto renderBookDto);
 }
