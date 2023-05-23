@@ -83,6 +83,11 @@ public class AdminController {
 		return "admin/book";
 	}
 
+	@GetMapping("/book/search/new")
+	public String searchBook() {
+		return "admin/searchNewBook";
+	}
+
 	@GetMapping("/users")
 	public String users() {
 		return "admin/users";

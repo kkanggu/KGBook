@@ -9,9 +9,9 @@
     </head>
 
     <div layout:fragment="content">
-        <div>
-            <button id="searchButton">신규 서적 검색</button>
-        </div>
+        <form action="/admin/book/search/new" method="GET">
+            <button id="searchNewBookButton" >신규 서적 검색</button>
+        </form>
         <div>
             <table class="table">
                 <thead>
