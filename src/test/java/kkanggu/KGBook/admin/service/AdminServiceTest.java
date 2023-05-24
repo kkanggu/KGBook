@@ -132,6 +132,7 @@ class AdminServiceTest {
 					.title("book" + (i + 1))
 					.author("author" + (i + 1))
 					.publisher("publisher")
+					.originPrice(13579)
 					.publishDate(LocalDate.now())
 					.createDate(LocalDate.now())
 					.description("description")

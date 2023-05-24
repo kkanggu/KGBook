@@ -42,6 +42,7 @@ class JdbcBookRepositoryTest {
 					.title("book" + (i + 1))
 					.author("author" + (i + 1))
 					.publisher("publisher")
+					.originPrice(13579)
 					.publishDate(LocalDate.now()).createDate(LocalDate.now())
 					.description("description")
 					.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
@@ -64,6 +65,7 @@ class JdbcBookRepositoryTest {
 				.title("title")
 				.author("author")
 				.publisher("publisher")
+				.originPrice(13579)
 				.publishDate(LocalDate.now())
 				.createDate(LocalDate.now())
 				.description("description")
@@ -81,6 +83,7 @@ class JdbcBookRepositoryTest {
 		assertThat(book.getTitle()).isEqualTo(findBook.getTitle());
 		assertThat(book.getAuthor()).isEqualTo(findBook.getAuthor());
 		assertThat(book.getPublisher()).isEqualTo(findBook.getPublisher());
+		assertThat(book.getOriginPrice()).isEqualTo(findBook.getOriginPrice());
 		assertThat(book.getPublishDate()).isEqualTo(findBook.getPublishDate());
 		assertThat(book.getDescription()).isEqualTo(findBook.getDescription());
 		assertThat(book.getOriginImageUrl()).isEqualTo(findBook.getOriginImageUrl());
@@ -117,6 +120,7 @@ class JdbcBookRepositoryTest {
 				.title("title")
 				.author("author")
 				.publisher("publisher")
+				.originPrice(13579)
 				.publishDate(LocalDate.now())
 				.createDate(LocalDate.now())
 				.description("description")
@@ -142,6 +146,10 @@ class JdbcBookRepositoryTest {
 				.title(rs.getString("title"))
 				.author(rs.getString("author"))
 				.publisher(rs.getString("publisher"))
+				.originPrice(rs.getInt("original_price"))
+				.discountPrice(rs.getInt("discount_price"))
+				.discountRate(rs.getInt("discount_rate"))
+				.discountType(rs.getString("discount_type"))
 				.publishDate(rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate())
 				.createDate(LocalDate.now())
 				.description(rs.getString("description"))

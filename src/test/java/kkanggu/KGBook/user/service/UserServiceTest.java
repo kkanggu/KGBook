@@ -117,6 +117,7 @@ class UserServiceTest {
 				.title("title")
 				.author("author")
 				.publisher("publisher")
+				.originPrice(13579)
 				.publishDate(LocalDate.now())
 				.createDate(LocalDate.now())
 				.description("description")

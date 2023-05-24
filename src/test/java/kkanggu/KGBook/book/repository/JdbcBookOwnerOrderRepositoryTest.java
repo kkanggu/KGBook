@@ -51,6 +51,7 @@ class JdbcBookOwnerOrderRepositoryTest {
 				.title("title")
 				.author("author")
 				.publisher("publisher")
+				.originPrice(13579)
 				.publishDate(LocalDate.now())
 				.createDate(LocalDate.now())
 				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")

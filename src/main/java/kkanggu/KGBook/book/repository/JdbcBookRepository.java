@@ -33,8 +33,10 @@ public class JdbcBookRepository implements BookRepository {
 			return null;
 		}
 
-		Object[] params = {book.getIsbn(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
-				book.getCreateDate(), book.getDescription(), book.getOriginImageUrl(), s3ImageUrl};
+		Object[] params = {book.getIsbn(), book.getTitle(), book.getAuthor(), book.getPublisher(),
+				book.getOriginPrice(), book.getDiscountPrice(), book.getDiscountRate(), book.getDiscountRate(),
+				book.getPublishDate(), book.getCreateDate(), book.getDescription(), book.getOriginImageUrl(),
+				s3ImageUrl};
 		int rows = jdbcTemplate.update(BookSql.CREATE_BOOK, params);
 		return 1 == rows ? book.getIsbn() : null;
 	}
@@ -62,6 +64,10 @@ public class JdbcBookRepository implements BookRepository {
 				.title(rs.getString("title"))
 				.author(rs.getString("author"))
 				.publisher(rs.getString("publisher"))
+				.originPrice(rs.getInt("original_price"))
+				.discountPrice(rs.getInt("discount_price"))
+				.discountRate(rs.getInt("discount_rate"))
+				.discountType(rs.getString("discount_type"))
 				.publishDate(rs.getTimestamp("publish_date").toLocalDateTime().toLocalDate())
 				.createDate(LocalDate.now())
 				.description(rs.getString("description"))

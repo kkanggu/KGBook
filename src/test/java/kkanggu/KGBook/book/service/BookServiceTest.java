@@ -62,6 +62,7 @@ class BookServiceTest {
 					.title("book" + (i + 1))
 					.author("author" + (i + 1))
 					.publisher("publisher")
+					.originPrice(13579)
 					.publishDate(LocalDate.now()).createDate(LocalDate.now())
 					.description("description")
 					.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
@@ -79,6 +80,7 @@ class BookServiceTest {
 				.title("title")
 				.author("author")
 				.publisher("publisher")
+				.originPrice(13579)
 				.publishDate(LocalDate.now())
 				.createDate(LocalDate.now())
 				.description("description")
@@ -124,6 +126,7 @@ class BookServiceTest {
 				.title("title")
 				.author("author")
 				.publisher("publisher")
+				.originPrice(13579)
 				.publishDate(LocalDate.now())
 				.createDate(LocalDate.now())
 				.description("description")
@@ -140,6 +143,7 @@ class BookServiceTest {
 		assertThat(book.getTitle()).isEqualTo(findBook.getTitle());
 		assertThat(book.getAuthor()).isEqualTo(findBook.getAuthor());
 		assertThat(book.getPublisher()).isEqualTo(findBook.getPublisher());
+		assertThat(book.getOriginPrice()).isEqualTo(findBook.getOriginPrice());
 		assertThat(book.getPublishDate()).isEqualTo(findBook.getPublishDate());
 		assertThat(book.getDescription()).isEqualTo(findBook.getDescription());
 		assertThat(book.getOriginImageUrl()).isEqualTo(findBook.getOriginImageUrl());
@@ -211,6 +215,7 @@ class BookServiceTest {
 				.title("title")
 				.author("author")
 				.publisher("publisher")
+				.originPrice(13579)
 				.publishDate(LocalDate.now())
 				.createDate(LocalDate.now())
 				.description("description")
@@ -225,6 +230,7 @@ class BookServiceTest {
 		assertThat(renderBookDto.getTitle()).isEqualTo(book.getTitle());
 		assertThat(renderBookDto.getAuthor()).isEqualTo(book.getAuthor());
 		assertThat(renderBookDto.getPublisher()).isEqualTo(book.getPublisher());
+		assertThat(renderBookDto.getOriginPrice()).isEqualTo(book.getOriginPrice());
 		assertThat(renderBookDto.getPublishDate()).isEqualTo(book.getPublishDate());
 		assertThat(renderBookDto.getDescription()).isEqualTo(book.getDescription());
 		assertThat(renderBookDto.getImageUrl()).isIn(book.getOriginImageUrl(), book.getS3ImageUrl());
