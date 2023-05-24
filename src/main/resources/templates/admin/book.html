@@ -62,6 +62,38 @@
                            th:disabled="${!isEdit}">
                 </div>
             </div>
+            <!-- 정가, 고정값 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.originPrice}"></div>
+                <div class="specific_view_right_div">
+                    <span th:text="*{originPrice}"
+                          style="display: flex; justify-content: center; align-items: center; height: 100%;"></span>
+                </div>
+            </div>
+            <!-- 할인된 가격, 고정값 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.discountPrice}"></div>
+                <div class="specific_view_right_div">
+                    <span th:text="*{discountPrice}"
+                          style="display: flex; justify-content: center; align-items: center; height: 100%;"></span>
+                </div>
+            </div>
+            <!-- 할인율, 고정값 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.discountRate}"></div>
+                <div class="specific_view_right_div">
+                    <span th:text="*{discountRate}"
+                          style="display: flex; justify-content: center; align-items: center; height: 100%;"></span>
+                </div>
+            </div>
+            <!-- 할인 정보, 고정값 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.discountType}"></div>
+                <div class="specific_view_right_div">
+                    <span th:text="*{discountType}"
+                          style="display: flex; justify-content: center; align-items: center; height: 100%;"></span>
+                </div>
+            </div>
             <!-- 발행일 -->
             <div class="specific_view_frame">
                 <div class="specific_view_left_tag" th:text="#{book.publishDate}"></div>

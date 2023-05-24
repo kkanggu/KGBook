@@ -21,6 +21,10 @@
                     <th th:text="#{book.title}" style="width: 200px; height: 50px;"></th>
                     <th th:text="#{book.author}" style="width: 150px; height: 50px;"></th>
                     <th th:text="#{book.publisher}" style="width: 150px; height: 50px;"></th>
+                    <th th:text="#{book.originPrice}" style="width: 50px; height: 50px;"></th>
+                    <th th:text="#{book.discountPrice}" style="width: 50px; height: 50px;"></th>
+                    <th th:text="#{book.discountRate}" style="width: 50px; height: 50px;"></th>
+                    <th th:text="#{book.discountType}" style="width: 100px; height: 50px;"></th>
                     <th th:text="#{book.publishDate}" style="width: 100px; height: 50px;"></th>
                     <th th:text="#{book.description}" style="width: 300px; height: 50px;"></th>
                 </tr>
@@ -38,6 +42,10 @@
                     </td>
                     <td th:text="${book.author}" style="width: 150px; height: 100px;"></td>
                     <td th:text="${book.publisher}" style="width: 150px; height: 100px;"></td>
+                    <th th:text="${book.originPrice}" style="width: 50px; height: 50px;"></th>
+                    <th th:text="${book.discountPrice}" style="width: 50px; height: 50px;"></th>
+                    <th th:text="${book.discountRate}" style="width: 50px; height: 50px;"></th>
+                    <th th:text="${book.discountType}" style="width: 100px; height: 50px;"></th>
                     <td th:text="${book.publishDate}" style="width: 100px; height: 100px;"></td>
                     <td th:text="${#strings.length(book.description) &gt; 100 ? #strings.substring(book.description, 0, 100) + '...' : book.description}"
                         style="width: 300px; height: 100px;"></td>
