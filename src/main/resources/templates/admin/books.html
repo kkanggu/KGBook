@@ -15,42 +15,41 @@
         <div>
             <table class="table">
                 <thead>
-                <tr>
-                    <th th:text="#{book.imageUrl}" style="width: 80px; height: 50px;"></th>
-                    <th th:text="#{book.isbn}" style="width: 80px; height: 50px;"></th>
-                    <th th:text="#{book.title}" style="width: 200px; height: 50px;"></th>
-                    <th th:text="#{book.author}" style="width: 150px; height: 50px;"></th>
-                    <th th:text="#{book.publisher}" style="width: 150px; height: 50px;"></th>
-                    <th th:text="#{book.originPrice}" style="width: 50px; height: 50px;"></th>
-                    <th th:text="#{book.discountPrice}" style="width: 50px; height: 50px;"></th>
-                    <th th:text="#{book.discountRate}" style="width: 50px; height: 50px;"></th>
-                    <th th:text="#{book.discountType}" style="width: 100px; height: 50px;"></th>
-                    <th th:text="#{book.publishDate}" style="width: 100px; height: 50px;"></th>
-                    <th th:text="#{book.description}" style="width: 300px; height: 50px;"></th>
-                </tr>
+                    <tr>
+                        <th th:text="#{book.imageUrl}" style="width: 80px; height: 50px;"></th>
+                        <th th:text="#{book.isbn}" style="width: 80px; height: 50px;"></th>
+                        <th th:text="#{book.title}" style="width: 200px; height: 50px;"></th>
+                        <th th:text="#{book.author}" style="width: 150px; height: 50px;"></th>
+                        <th th:text="#{book.publisher}" style="width: 150px; height: 50px;"></th>
+                        <th th:text="#{book.originPrice}" style="width: 50px; height: 50px;"></th>
+                        <th th:text="#{book.discountPrice}" style="width: 50px; height: 50px;"></th>
+                        <th th:text="#{book.discountRate}" style="width: 50px; height: 50px;"></th>
+                        <th th:text="#{book.discountType}" style="width: 100px; height: 50px;"></th>
+                        <th th:text="#{book.publishDate}" style="width: 100px; height: 50px;"></th>
+                        <th th:text="#{book.description}" style="width: 300px; height: 50px;"></th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr th:each="book : ${books}">
-                    <td>
-                        <img th:src="${book.imageUrl}" width="80" height="100">
-                    </td>
-                    <td>
-                        <a th:text="${book.isbn}" th:href="@{/admin/book/{isbn}(isbn=${book.isbn})}" style="width: 80px; height: 100px;"></a>
-                    </td>
-                    <td>
-                        <div th:utext="${book.title}" style="width: 200px; height: 100px; display: flex; align-items: center;"></div>
-                    </td>
-                    <td th:text="${book.author}" style="width: 150px; height: 100px;"></td>
-                    <td th:text="${book.publisher}" style="width: 150px; height: 100px;"></td>
-                    <th th:text="${book.originPrice}" style="width: 50px; height: 50px;"></th>
-                    <th th:text="${book.discountPrice}" style="width: 50px; height: 50px;"></th>
-                    <th th:text="${book.discountRate}" style="width: 50px; height: 50px;"></th>
-                    <th th:text="${book.discountType}" style="width: 100px; height: 50px;"></th>
-                    <td th:text="${book.publishDate}" style="width: 100px; height: 100px;"></td>
-                    <td th:text="${#strings.length(book.description) &gt; 100 ? #strings.substring(book.description, 0, 100) + '...' : book.description}"
-                        style="width: 300px; height: 100px;"></td>
-                </tr>
-                </td>
+                    <tr th:each="book : ${books}">
+                        <td>
+                            <img th:src="${book.imageUrl}" width="80" height="100">
+                        </td>
+                        <td>
+                            <a th:text="${book.isbn}" th:href="@{/admin/book/{isbn}(isbn=${book.isbn})}" style="width: 80px; height: 100px;"></a>
+                        </td>
+                        <td>
+                            <div th:utext="${book.title}" style="width: 200px; height: 100px; display: flex; align-items: center;"></div>
+                        </td>
+                        <td th:text="${book.author}" style="width: 150px; height: 100px;"></td>
+                        <td th:text="${book.publisher}" style="width: 150px; height: 100px;"></td>
+                        <th th:text="${book.originPrice}" style="width: 50px; height: 50px;"></th>
+                        <th th:text="${book.discountPrice}" style="width: 50px; height: 50px;"></th>
+                        <th th:text="${book.discountRate}" style="width: 50px; height: 50px;"></th>
+                        <th th:text="${book.discountType}" style="width: 100px; height: 50px;"></th>
+                        <td th:text="${book.publishDate}" style="width: 100px; height: 100px;"></td>
+                        <td th:text="${#strings.length(book.description) &gt; 100 ? #strings.substring(book.description, 0, 100) + '...' : book.description}"
+                            style="width: 300px; height: 100px;"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
