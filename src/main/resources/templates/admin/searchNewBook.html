@@ -11,11 +11,18 @@
     <div layout:fragment="content">
         <form class="specific_view"
               method="post"
-              action="/admin/book/search/new">
+              action="/admin/book/new">
             <!-- 키워드 -->
             <div class="specific_view_frame"
                  style="margin-left: 0px; border-bottom: 1px solid #000; font-size: 15px;">
-                <div class="specific_view_left_tag" th:text="#{book.search}"></div>
+                <div class="specific_view_left_tag">
+                    <input type="checkbox"
+                           id="searchRecent"
+                           name="searchRecent">
+                    <input type="hidden"
+                           name="_searchRecent"
+                           value="on"/>
+                </div>
                 <div class="specific_view_right_div">
                     <input class="specific_view_right_input"
                            type="text"

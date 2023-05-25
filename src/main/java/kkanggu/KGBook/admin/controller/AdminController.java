@@ -1,14 +1,21 @@
 package kkanggu.KGBook.admin.controller;
 
 import java.beans.PropertyEditorSupport;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import kkanggu.KGBook.admin.dto.ApiBookDto;
 import kkanggu.KGBook.admin.service.AdminService;
 import kkanggu.KGBook.book.dto.RenderBookDto;
 import lombok.extern.slf4j.Slf4j;
@@ -83,9 +90,39 @@ public class AdminController {
 		return "admin/book";
 	}
 
-	@GetMapping("/book/search/new")
-	public String searchBook() {
+	@GetMapping("/book/new")
+	public String searchNewBook() {
 		return "admin/searchNewBook";
+	}
+
+	@PostMapping("/book/new")
+	public String fetchNewBook(@ModelAttribute("keyword") String keyword,
+							   @ModelAttribute("searchRecent") String searchRecent,
+							   RedirectAttributes redirectAttributes) {
+		boolean isSearchRecent = "on".equals(searchRecent);
+		String decodeKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
+		ResponseEntity<String> responseEntity = adminService.fetchBookFromNaverApi(decodeKeyword, isSearchRecent);
+
+		if (HttpStatus.OK != responseEntity.getStatusCode()) {
+			log.warn("API fetch failed. headers : {}, body : {}", responseEntity.getHeaders(), responseEntity.getBody());
+			return "redirect:/admin/book/new";
+		}
+
+		List<ApiBookDto> apiBookDtos = adminService.convertXmlToApiBookDto(responseEntity.getBody());
+		List<RenderBookDto> renderBookDtos = adminService.convertApiBookDtoToRenderBookDto(apiBookDtos);
+
+		redirectAttributes.addFlashAttribute("books", renderBookDtos);
+
+		return "redirect:/admin/book/new/list";
+	}
+
+	@GetMapping("/book/new/list")
+	public String listNewBooks(@ModelAttribute("books") List<RenderBookDto> books,
+							   HttpSession httpSession,
+							   Model model) {
+		httpSession.setAttribute("books", books);
+
+		return "admin/newBooks";
 	}
 
 	@GetMapping("/users")

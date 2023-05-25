@@ -80,6 +80,26 @@ public class AdminService {
 		return apiBookDtos;
 	}
 
+	public List<RenderBookDto> convertApiBookDtoToRenderBookDto(List<ApiBookDto> apiBookDtos) {
+		return apiBookDtos.stream()
+				.map(apiBookDto -> {
+					DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+					LocalDate date = LocalDate.parse(apiBookDto.getPubdate(), inputFormatter);
+
+					return RenderBookDto.builder()
+							.isbn(apiBookDto.getIsbn())
+							.title(apiBookDto.getTitle())
+							.author(apiBookDto.getAuthor())
+							.publisher(apiBookDto.getPublisher())
+							.originPrice(apiBookDto.getDiscount())
+							.publishDate(date)
+							.description(apiBookDto.getDescription())
+							.imageUrl(apiBookDto.getImage())
+							.build();
+				})
+				.collect(Collectors.toList());
+	}
+
 	public List<BookEntity> convertApiBookDtoToBookEntity(List<ApiBookDto> apiBookDtos) {
 		return apiBookDtos.stream()
 				.map(apiBookDto -> {
@@ -108,7 +128,7 @@ public class AdminService {
 	public List<RenderBookDto> findAll() {
 		List<BookEntity> books = bookController.findAll();
 
-		return books.stream().map(AdminService::convertBookEntityToRenderBookDto)
+		return books.stream().map(this::convertBookEntityToRenderBookDto)
 				.toList();
 	}
 
@@ -122,7 +142,7 @@ public class AdminService {
 		bookController.updateBook(renderBookDto);
 	}
 
-	private static RenderBookDto convertBookEntityToRenderBookDto(BookEntity book) {
+	private RenderBookDto convertBookEntityToRenderBookDto(BookEntity book) {
 		return RenderBookDto.builder()
 				.isbn(book.getIsbn())
 				.title(book.getTitle())
