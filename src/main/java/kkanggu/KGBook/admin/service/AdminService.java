@@ -63,7 +63,6 @@ public class AdminService {
 					.getJSONObject("rss")
 					.getJSONObject("channel")
 					.getJSONArray("item");
-
 			for (Object object : jsonArray) {
 				ApiBookDto apiBookDto = objectMapper.readValue(object.toString(), ApiBookDto.class);
 				apiBookDtos.add(apiBookDto);
@@ -89,7 +88,7 @@ public class AdminService {
 					return RenderBookDto.builder()
 							.isbn(apiBookDto.getIsbn())
 							.title(apiBookDto.getTitle())
-							.author(apiBookDto.getAuthor())
+							.author(apiBookDto.getAuthor().replace("^", ","))
 							.publisher(apiBookDto.getPublisher())
 							.originPrice(apiBookDto.getDiscount())
 							.publishDate(date)
