@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html charset="UTF-8"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+
+    <head>
+        <title>Edit New Book</title>
+    </head>
+
+    <div layout:fragment="content" th:object="${book}">
+        <!-- 이미지 출력 -->
+        <div style="float: left; width: 320px; height: 600px; margin-left: 100px; display: flex; justify-content: center; align-items: center;">
+            <img th:src="*{imageUrl}"
+                 width="320px"
+                 height="400px">
+        </div>
+        <!-- 이미지 우측에 서적 상세 정보 출력 -->
+        <form class="specific_view"
+              th:method="post"
+              th:action="@{${'/admin/book/new/{isbn}'}(isbn=${isbn})}">
+            <!-- ISBN, 고정값 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.isbn}"></div>
+                <div class="specific_view_right_div">
+                        <span th:text="*{isbn}"
+                              style="display: flex; justify-content: center; align-items: center; height: 100%;"></span>
+                </div>
+            </div>
+            <!-- 서적명 -->
+            <div class="specific_view_frame" style="height: 100px;">
+                <div class="specific_view_left_tag" th:text="#{book.title}"></div>
+                <div class="specific_view_right_div">
+                        <textarea class="specific_view_right_input"
+                                  id="title"
+                                  th:field="*{title}"
+                                  placeholder="서적명"></textarea>
+                </div>
+            </div>
+            <!-- 저자 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.author}"></div>
+                <div class="specific_view_right_div">
+                    <input class="specific_view_right_input"
+                           type="text"
+                           id="author"
+                           th:field="*{author}"
+                           placeholder="저자">
+                </div>
+            </div>
+            <!-- 출판사 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.publisher}"></div>
+                <div class="specific_view_right_div">
+                    <input class="specific_view_right_input"
+                           type="text"
+                           id="publisher"
+                           th:field="*{publisher}"
+                           placeholder="출판사">
+                </div>
+            </div>
+            <!-- 정가, 고정값 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.originPrice}"></div>
+                <div class="specific_view_right_div">
+                        <span th:text="*{originPrice}"
+                              style="display: flex; justify-content: center; align-items: center; height: 100%;"></span>
+                </div>
+            </div>
+            <!-- 발행일 -->
+            <div class="specific_view_frame">
+                <div class="specific_view_left_tag" th:text="#{book.publishDate}"></div>
+                <div class="specific_view_right_div">
+                    <input class="specific_view_right_input"
+                           type="date"
+                           id="publishDate"
+                           name="publishDate"
+                           th:value="*{publishDate}">
+                </div>
+            </div>
+            <!-- 서적 상세 설명 -->
+            <div class="specific_view_frame" style="height: 300px; border-bottom: 1px solid #000;">
+                <div class="specific_view_left_tag" th:text="#{book.description}"></div>
+                <div class="specific_view_right_div">
+                        <textarea class="specific_view_right_input"
+                                  id="description"
+                                  th:field="*{description}"
+                                  placeholder="상세 설명"></textarea>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div style="display: flex; justify-content: center;">
+                <button class="button"
+                        type="submit"
+                        th:text="#{button.save}"></button>
+                <button class="button"
+                        th:onclick="|location.href='@{/admin/books}'|"
+                        type="button"
+                        th:text="#{button.cancel}"
+                        style="margin-left: 10px;"></button>
+            </div>
+        </form>
+    </div>
+</html>

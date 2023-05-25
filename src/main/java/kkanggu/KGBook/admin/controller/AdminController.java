@@ -118,8 +118,7 @@ public class AdminController {
 
 	@GetMapping("/book/new/list")
 	public String listNewBooks(@ModelAttribute("books") List<RenderBookDto> books,
-							   HttpSession httpSession,
-							   Model model) {
+							   HttpSession httpSession) {
 		httpSession.setAttribute("books", books);
 
 		return "admin/newBooks";
@@ -138,6 +137,35 @@ public class AdminController {
 		model.addAttribute("book", book);
 
 		return "admin/editNewBook";
+	}
+
+	@PostMapping("/book/new/{isbn}")
+	public String editNewBook(HttpSession httpSession,
+								RenderBookDto renderBookDto,
+								RedirectAttributes redirectAttributes) {
+		List<RenderBookDto> books = (List<RenderBookDto>) httpSession.getAttribute("books");
+
+		books = books.stream()
+				.map(book -> {
+					if (book.getIsbn().equals(renderBookDto.getIsbn())) {
+						return RenderBookDto.builder()
+								.isbn(book.getIsbn())
+								.title(renderBookDto.getTitle())
+								.author(renderBookDto.getAuthor())
+								.publisher(renderBookDto.getPublisher())
+								.originPrice(book.getOriginPrice())
+								.publishDate(renderBookDto.getPublishDate())
+								.description(renderBookDto.getDescription())
+								.imageUrl(book.getImageUrl())
+								.build();
+					}
+					return book;
+				})
+				.toList();
+
+		redirectAttributes.addFlashAttribute("books", books);
+
+		return "redirect:/admin/book/new/list";
 	}
 
 	@GetMapping("/users")
