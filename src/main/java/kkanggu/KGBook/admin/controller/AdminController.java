@@ -125,6 +125,21 @@ public class AdminController {
 		return "admin/newBooks";
 	}
 
+	@GetMapping("/book/new/{isbn}")
+	public String getNewBook(@PathVariable long isbn,
+							 HttpSession httpSession,
+							 Model model) {
+		List<RenderBookDto> books = (List<RenderBookDto>) httpSession.getAttribute("books");
+		RenderBookDto book = books.stream()
+				.filter(renderBookDto -> renderBookDto.getIsbn() == isbn)
+				.findAny()
+				.orElse(null);
+
+		model.addAttribute("book", book);
+
+		return "admin/editNewBook";
+	}
+
 	@GetMapping("/users")
 	public String users() {
 		return "admin/users";
