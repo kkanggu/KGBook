@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.book.repository.BookOwnerOrderRepository;
 import kkanggu.KGBook.book.repository.BookRepository;
@@ -50,23 +49,7 @@ public class BookService {
 		return books;
 	}
 
-	public RenderBookDto convertToRenderBookDto(BookEntity book) {
-		return RenderBookDto.builder()
-				.isbn(book.getIsbn())
-				.title(book.getTitle())
-				.author(book.getAuthor())
-				.publisher(book.getPublisher())
-				.originPrice(book.getOriginPrice())
-				.discountPrice(book.getDiscountPrice())
-				.discountRate(book.getDiscountRate())
-				.discountType(book.getDiscountType())
-				.publishDate(book.getPublishDate())
-				.description(book.getDescription())
-				.imageUrl(null == book.getS3ImageUrl() ? book.getOriginImageUrl() : book.getS3ImageUrl())
-				.build();
-	}
-
-	public void updateBook(RenderBookDto renderBookDto) {
-		bookRepository.updateBook(renderBookDto);
+	public void updateBook(BookEntity book) {
+		bookRepository.updateBook(book);
 	}
 }

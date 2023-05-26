@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.book.repository.BookOwnerOrderRepository;
 import kkanggu.KGBook.book.repository.BookRepository;
@@ -175,35 +174,5 @@ class BookControllerImplTest {
 			boolean isDeleted = imageController.deleteImage(book.getS3ImageUrl());
 			assertThat(isDeleted).isEqualTo(true);
 		}
-	}
-
-	@Test
-	@DisplayName("BookEntity를 RenderBookDto로 변환")
-	void convertToRenderBookDto() {
-		// given
-		BookEntity book = BookEntity.builder()
-				.isbn(1357924680134L)
-				.title("title")
-				.author("author")
-				.publisher("publisher")
-				.originPrice(13579)
-				.publishDate(LocalDate.now())
-				.createDate(LocalDate.now())
-				.description("description")
-				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
-				.build();
-
-		// when
-		RenderBookDto renderBookDto = bookController.convertToRenderBookDto(book);
-
-		// then
-		assertThat(renderBookDto.getIsbn()).isEqualTo(book.getIsbn());
-		assertThat(renderBookDto.getTitle()).isEqualTo(book.getTitle());
-		assertThat(renderBookDto.getAuthor()).isEqualTo(book.getAuthor());
-		assertThat(renderBookDto.getPublisher()).isEqualTo(book.getPublisher());
-		assertThat(renderBookDto.getOriginPrice()).isEqualTo(book.getOriginPrice());
-		assertThat(renderBookDto.getPublishDate()).isEqualTo(book.getPublishDate());
-		assertThat(renderBookDto.getDescription()).isEqualTo(book.getDescription());
-		assertThat(renderBookDto.getImageUrl()).isIn(book.getOriginImageUrl(), book.getS3ImageUrl());
 	}
 }

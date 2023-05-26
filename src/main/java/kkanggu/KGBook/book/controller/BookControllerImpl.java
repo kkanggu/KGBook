@@ -3,7 +3,6 @@ package kkanggu.KGBook.book.controller;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
-import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.book.service.BookService;
 
@@ -38,12 +37,7 @@ public class BookControllerImpl implements BookController {
 	}
 
 	@Override
-	public RenderBookDto convertToRenderBookDto(BookEntity book) {
-		return bookService.convertToRenderBookDto(book);
-	}
-
-	@Override
-	public void updateBook(RenderBookDto renderBookDto) {
-		bookService.updateBook(renderBookDto);
+	public void updateBook(BookEntity book) {
+		bookService.updateBook(book);
 	}
 }

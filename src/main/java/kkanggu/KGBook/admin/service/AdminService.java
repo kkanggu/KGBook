@@ -97,7 +97,7 @@ public class AdminService {
 	}
 
 	public void updateBook(RenderBookDto renderBookDto) {
-		bookController.updateBook(renderBookDto);
+		bookController.updateBook(convertRenderBookDtoToBookEntity(renderBookDto));
 	}
 
 	public List<RenderBookDto> convertApiBookDtoToRenderBookDto(List<ApiBookDto> apiBookDtos) {
@@ -154,6 +154,20 @@ public class AdminService {
 				.publishDate(book.getPublishDate())
 				.description(book.getDescription())
 				.imageUrl(book.getS3ImageUrl())
+				.build();
+	}
+
+	private BookEntity convertRenderBookDtoToBookEntity(RenderBookDto renderBookDto) {
+		return BookEntity.builder()
+				.isbn(renderBookDto.getIsbn())
+				.title(renderBookDto.getTitle())
+				.author(renderBookDto.getAuthor())
+				.publisher(renderBookDto.getPublisher())
+				.originPrice(renderBookDto.getOriginPrice())
+				.publishDate(renderBookDto.getPublishDate())
+				.createDate(LocalDate.now())
+				.description(renderBookDto.getDescription())
+				.originImageUrl(renderBookDto.getImageUrl())
 				.build();
 	}
 }

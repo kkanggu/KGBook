@@ -2,7 +2,6 @@ package kkanggu.KGBook.book.controller;
 
 import java.util.List;
 
-import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
 
 public interface BookController {
@@ -14,7 +13,5 @@ public interface BookController {
 
 	List<BookEntity> findBooksUserOwn(long userId);
 
-	RenderBookDto convertToRenderBookDto(BookEntity book);
-
-	void updateBook(RenderBookDto renderBookDto);
+	void updateBook(BookEntity book);
 }
