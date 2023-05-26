@@ -79,6 +79,27 @@ public class AdminService {
 		return apiBookDtos;
 	}
 
+	public void saveBooks(List<BookEntity> books) {
+		books.forEach(bookController::saveBook);
+	}
+
+	public List<RenderBookDto> findAll() {
+		List<BookEntity> books = bookController.findAll();
+
+		return books.stream().map(this::convertBookEntityToRenderBookDto)
+				.toList();
+	}
+
+	public RenderBookDto findByIsbn(long isbn) {
+		BookEntity book = bookController.findByIsbn(isbn);
+
+		return convertBookEntityToRenderBookDto(book);
+	}
+
+	public void updateBook(RenderBookDto renderBookDto) {
+		bookController.updateBook(renderBookDto);
+	}
+
 	public List<RenderBookDto> convertApiBookDtoToRenderBookDto(List<ApiBookDto> apiBookDtos) {
 		return apiBookDtos.stream()
 				.map(apiBookDto -> {
@@ -118,27 +139,6 @@ public class AdminService {
 							.build();
 				})
 				.collect(Collectors.toList());
-	}
-
-	public void saveBooks(List<BookEntity> books) {
-		books.forEach(bookController::saveBook);
-	}
-
-	public List<RenderBookDto> findAll() {
-		List<BookEntity> books = bookController.findAll();
-
-		return books.stream().map(this::convertBookEntityToRenderBookDto)
-				.toList();
-	}
-
-	public RenderBookDto findByIsbn(long isbn) {
-		BookEntity book = bookController.findByIsbn(isbn);
-
-		return convertBookEntityToRenderBookDto(book);
-	}
-
-	public void updateBook(RenderBookDto renderBookDto) {
-		bookController.updateBook(renderBookDto);
 	}
 
 	private RenderBookDto convertBookEntityToRenderBookDto(BookEntity book) {
