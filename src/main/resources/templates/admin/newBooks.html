@@ -5,11 +5,13 @@
       layout:decorate="~{layout/admin}">
 
     <head>
-        <title>Book</title>
+        <title>New Books</title>
     </head>
 
     <div layout:fragment="content">
-        <div>
+        <form method="post"
+              action="/admin/book/new/save"
+              id="newBookForm">
             <table class="table">
                 <thead>
                     <tr>
@@ -32,7 +34,7 @@
                                    name="add">
                             <input type="hidden"
                                    name="_add"
-                                   value="on"/>
+                                   th:value="on"/>
                         </td>
                         <td>
                             <img th:src="${book.imageUrl}" width="80" height="100">
@@ -52,6 +54,40 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+
+            <div style="display: flex; justify-content: center;">
+                <button class="button"
+                        type="submit"
+                        onclick="submitForm()"
+                        th:text="#{button.save}"></button>
+                <button class="button"
+                        th:onclick="|location.href='@{/admin/book/new}'|"
+                        type="button"
+                        th:text="#{button.cancel}"
+                        style="margin-left: 10px;"></button>
+            </div>
+        </form>
+
+        <script>
+            function submitForm() {
+                var form = document.getElementById('newBookForm');
+                var checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                var selectedBooks = Array.from(checkboxes).map(function(checkbox) {
+                  return checkbox.checked;
+                });
+
+                createInputField(form, 'selectedBooks', selectedBooks.join(','));
+
+                form.submit();
+            }
+
+            function createInputField(form, name, value) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+            }
+        </script>
     </div>
 </html>
