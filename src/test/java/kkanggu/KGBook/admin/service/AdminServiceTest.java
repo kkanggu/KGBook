@@ -108,21 +108,6 @@ class AdminServiceTest {
 	}
 
 	@Test
-	@DisplayName("ApiBookDto를 BookEntity로 변환")
-	void convertApiBookDtoToBookEntity() throws IOException {
-		// given
-		String booksXml = Files.readString(Path.of("src", "test", "resources", "api-string-data.xml"));
-		List<ApiBookDto> apiBookDtos = adminService.convertXmlToApiBookDto(booksXml);
-
-		// when
-		List<BookEntity> books = adminService.convertApiBookDtoToBookEntity(apiBookDtos);
-
-		// then
-		assertThat(books).isNotNull();
-		assertThat(books.size()).isEqualTo(10);
-	}
-
-	@Test
 	@DisplayName("List<BookEntity>를 저장")
 	void saveBooks() {
 		// given
