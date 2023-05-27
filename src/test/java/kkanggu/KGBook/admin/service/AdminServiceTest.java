@@ -24,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import kkanggu.KGBook.admin.dto.ApiBookDto;
 import kkanggu.KGBook.book.controller.BookController;
+import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.common.aws.ImageController;
 
@@ -125,18 +126,17 @@ class AdminServiceTest {
 	@DisplayName("List<BookEntity>를 저장")
 	void saveBooks() {
 		// given
-		List<BookEntity> books = new ArrayList<>();
+		List<RenderBookDto> books = new ArrayList<>();
 		for (int i = 0; i < 4; ++i) {
-			BookEntity book = BookEntity.builder()
+			RenderBookDto book = RenderBookDto.builder()
 					.isbn(1357924680130L + i)
 					.title("book" + (i + 1))
 					.author("author" + (i + 1))
 					.publisher("publisher")
 					.originPrice(13579)
 					.publishDate(LocalDate.now())
-					.createDate(LocalDate.now())
 					.description("description")
-					.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+					.imageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
 					.build();
 			books.add(book);
 		}

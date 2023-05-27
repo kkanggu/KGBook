@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.IntStream;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
@@ -141,8 +142,8 @@ public class AdminController {
 
 	@PostMapping("/book/new/{isbn}")
 	public String editNewBook(HttpSession httpSession,
-								RenderBookDto renderBookDto,
-								RedirectAttributes redirectAttributes) {
+							  RenderBookDto renderBookDto,
+							  RedirectAttributes redirectAttributes) {
 		List<RenderBookDto> books = (List<RenderBookDto>) httpSession.getAttribute("books");
 
 		books = books.stream()
@@ -166,6 +167,22 @@ public class AdminController {
 		redirectAttributes.addFlashAttribute("books", books);
 
 		return "redirect:/admin/book/new/list";
+	}
+
+	@PostMapping("/book/new/save")
+	public String saveNewBooks(HttpSession httpSession,
+							   RedirectAttributes redirectAttributes,
+							   @ModelAttribute("selectedBooks") List<Boolean> selectedBooks) {
+		List<RenderBookDto> books = (List<RenderBookDto>) httpSession.getAttribute("books");
+
+		List<RenderBookDto> renderBookDtos = IntStream.range(0, books.size())
+				.filter(selectedBooks::get)
+				.mapToObj(books::get)
+				.toList();
+
+		adminService.saveBooks(renderBookDtos);
+
+		return "redirect:/admin/books";
 	}
 
 	@GetMapping("/users")

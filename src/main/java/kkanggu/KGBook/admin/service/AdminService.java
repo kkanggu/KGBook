@@ -79,8 +79,10 @@ public class AdminService {
 		return apiBookDtos;
 	}
 
-	public void saveBooks(List<BookEntity> books) {
-		books.forEach(bookController::saveBook);
+	public void saveBooks(List<RenderBookDto> books) {
+		books.stream()
+				.map(this::convertRenderBookDtoToBookEntity)
+				.forEach(bookController::saveBook);
 	}
 
 	public List<RenderBookDto> findAll() {
