@@ -141,8 +141,8 @@ public class AdminController {
 	}
 
 	@PostMapping("/book/new/{isbn}")
-	public String editNewBook(HttpSession httpSession,
-							  RenderBookDto renderBookDto,
+	public String editNewBook(@ModelAttribute RenderBookDto renderBookDto,
+							  HttpSession httpSession,
 							  RedirectAttributes redirectAttributes) {
 		List<RenderBookDto> books = (List<RenderBookDto>) httpSession.getAttribute("books");
 
@@ -171,7 +171,6 @@ public class AdminController {
 
 	@PostMapping("/book/new/save")
 	public String saveNewBooks(HttpSession httpSession,
-							   RedirectAttributes redirectAttributes,
 							   @ModelAttribute("selectedBooks") List<Boolean> selectedBooks) {
 		List<RenderBookDto> books = (List<RenderBookDto>) httpSession.getAttribute("books");
 
