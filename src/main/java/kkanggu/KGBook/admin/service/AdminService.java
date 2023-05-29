@@ -29,13 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AdminService {
 	private final BookController bookController;
+	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
 	private final Keys keys;
 
 	public AdminService(BookController bookController,
-						ObjectMapper objectMapper,
-						Keys keys) {
+	                    RestTemplate restTemplate,
+	                    ObjectMapper objectMapper,
+	                    Keys keys) {
 		this.bookController = bookController;
+		this.restTemplate = restTemplate;
 		this.objectMapper = objectMapper;
 		this.keys = keys;
 	}
@@ -46,7 +49,6 @@ public class AdminService {
 			naverBookApiUrl += "&sort=date";
 		}
 
-		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.set("X-Naver-Client-Id", keys.getNaverClientId());
 		httpHeaders.set("X-Naver-Client-Secret", keys.getNaverClientSecret());
