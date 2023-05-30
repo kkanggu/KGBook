@@ -98,7 +98,7 @@ public class AdminService {
 	public RenderBookDto findByIsbn(long isbn) {
 		BookEntity book = bookController.findByIsbn(isbn);
 
-		return convertBookEntityToRenderBookDto(book);
+		return null != book ? convertBookEntityToRenderBookDto(book) : null;
 	}
 
 	public void updateBook(RenderBookDto renderBookDto) {
