@@ -1,17 +1,7 @@
 package kkanggu.KGBook.book.controller;
 
-import java.util.List;
+import org.springframework.stereotype.Controller;
 
-import kkanggu.KGBook.book.entity.BookEntity;
-
-public interface BookController {
-	Long saveBook(BookEntity book);
-
-	List<BookEntity> findAll();
-
-	BookEntity findByIsbn(long isbn);
-
-	List<BookEntity> findBooksUserOwn(long userId);
-
-	void updateBook(BookEntity book);
+@Controller
+public class BookController {
 }
