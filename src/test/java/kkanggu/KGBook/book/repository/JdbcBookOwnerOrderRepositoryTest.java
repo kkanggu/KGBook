@@ -16,8 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import kkanggu.KGBook.book.controller.BookController;
 import kkanggu.KGBook.book.entity.BookEntity;
+import kkanggu.KGBook.book.service.BookService;
 import kkanggu.KGBook.common.aws.ImageController;
 import kkanggu.KGBook.user.controller.UserController;
 import kkanggu.KGBook.user.entity.UserEntity;
@@ -29,7 +29,7 @@ import kkanggu.KGBook.user.entity.UserEntity;
 class JdbcBookOwnerOrderRepositoryTest {
 	private final JdbcTemplate jdbcTemplate;
 	private final ImageController imageController;
-	private final BookController bookController;
+	private final BookService bookService;
 	private final UserController userController;
 	private final JdbcBookOwnerOrderRepository jdbcBookOwnerOrderRepository;
 	private final BookEntity book;
@@ -37,12 +37,12 @@ class JdbcBookOwnerOrderRepositoryTest {
 
 	@Autowired
 	public JdbcBookOwnerOrderRepositoryTest(DataSource dataSource,
-											BookController bookController,
+											BookService bookService,
 											UserController userController,
 											ImageController imageController,
 											JdbcBookOwnerOrderRepository jdbcBookOwnerOrderRepository) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.bookController = bookController;
+		this.bookService = bookService;
 		this.userController = userController;
 		this.imageController = imageController;
 		this.jdbcBookOwnerOrderRepository = jdbcBookOwnerOrderRepository;
@@ -68,7 +68,7 @@ class JdbcBookOwnerOrderRepositoryTest {
 
 	@AfterEach
 	void removeImage() {
-		BookEntity savedBook = bookController.findByIsbn(book.getIsbn());
+		BookEntity savedBook = bookService.findByIsbn(book.getIsbn());
 		imageController.deleteImage(savedBook.getS3ImageUrl());
 	}
 
@@ -76,7 +76,7 @@ class JdbcBookOwnerOrderRepositoryTest {
 	@DisplayName("유저가 보유한 서적 저장")
 	void saveBookUserOwnTest() {
 		// given
-		bookController.saveBook(book);
+		bookService.saveBook(book);
 		Long id1 = userController.saveUser(users.get(0));
 		Long id2 = userController.saveUser(users.get(1));
 
@@ -95,7 +95,7 @@ class JdbcBookOwnerOrderRepositoryTest {
 	@DisplayName("유저 id를 이용하여 유저가 보유한 서적의 isbn 가져오기")
 	void findIsbnByUserIdTest() {
 		// given
-		bookController.saveBook(book);
+		bookService.saveBook(book);
 		Long id1 = userController.saveUser(users.get(0));
 		Long id2 = userController.saveUser(users.get(1));
 		jdbcBookOwnerOrderRepository.saveBookUserOwn(book.getIsbn(), id1);
@@ -124,7 +124,7 @@ class JdbcBookOwnerOrderRepositoryTest {
 	@DisplayName("isbn을 이용하여 해당 서적을 보유한 유저들의 id 가져오기")
 	void findUserIdByIsbnTest() {
 		// given
-		bookController.saveBook(book);
+		bookService.saveBook(book);
 		Long id1 = userController.saveUser(users.get(0));
 		Long id2 = userController.saveUser(users.get(1));
 		jdbcBookOwnerOrderRepository.saveBookUserOwn(book.getIsbn(), id1);
