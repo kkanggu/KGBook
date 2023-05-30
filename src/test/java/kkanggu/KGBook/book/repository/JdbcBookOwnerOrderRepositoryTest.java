@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.book.service.BookService;
 import kkanggu.KGBook.common.aws.ImageController;
-import kkanggu.KGBook.user.controller.UserController;
 import kkanggu.KGBook.user.entity.UserEntity;
+import kkanggu.KGBook.user.service.UserService;
 
 
 @SpringBootTest
@@ -30,7 +30,7 @@ class JdbcBookOwnerOrderRepositoryTest {
 	private final JdbcTemplate jdbcTemplate;
 	private final ImageController imageController;
 	private final BookService bookService;
-	private final UserController userController;
+	private final UserService userService;
 	private final JdbcBookOwnerOrderRepository jdbcBookOwnerOrderRepository;
 	private final BookEntity book;
 	private final List<UserEntity> users;
@@ -38,12 +38,12 @@ class JdbcBookOwnerOrderRepositoryTest {
 	@Autowired
 	public JdbcBookOwnerOrderRepositoryTest(DataSource dataSource,
 											BookService bookService,
-											UserController userController,
+											UserService userService,
 											ImageController imageController,
 											JdbcBookOwnerOrderRepository jdbcBookOwnerOrderRepository) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.bookService = bookService;
-		this.userController = userController;
+		this.userService = userService;
 		this.imageController = imageController;
 		this.jdbcBookOwnerOrderRepository = jdbcBookOwnerOrderRepository;
 		book = BookEntity.builder()
@@ -77,8 +77,8 @@ class JdbcBookOwnerOrderRepositoryTest {
 	void saveBookUserOwnTest() {
 		// given
 		bookService.saveBook(book);
-		Long id1 = userController.saveUser(users.get(0));
-		Long id2 = userController.saveUser(users.get(1));
+		Long id1 = userService.saveUser(users.get(0));
+		Long id2 = userService.saveUser(users.get(1));
 
 		// when
 		jdbcBookOwnerOrderRepository.saveBookUserOwn(book.getIsbn(), id1);
@@ -96,8 +96,8 @@ class JdbcBookOwnerOrderRepositoryTest {
 	void findIsbnByUserIdTest() {
 		// given
 		bookService.saveBook(book);
-		Long id1 = userController.saveUser(users.get(0));
-		Long id2 = userController.saveUser(users.get(1));
+		Long id1 = userService.saveUser(users.get(0));
+		Long id2 = userService.saveUser(users.get(1));
 		jdbcBookOwnerOrderRepository.saveBookUserOwn(book.getIsbn(), id1);
 		jdbcBookOwnerOrderRepository.saveBookUserOwn(book.getIsbn(), id2);
 
@@ -125,8 +125,8 @@ class JdbcBookOwnerOrderRepositoryTest {
 	void findUserIdByIsbnTest() {
 		// given
 		bookService.saveBook(book);
-		Long id1 = userController.saveUser(users.get(0));
-		Long id2 = userController.saveUser(users.get(1));
+		Long id1 = userService.saveUser(users.get(0));
+		Long id2 = userService.saveUser(users.get(1));
 		jdbcBookOwnerOrderRepository.saveBookUserOwn(book.getIsbn(), id1);
 		jdbcBookOwnerOrderRepository.saveBookUserOwn(book.getIsbn(), id2);
 

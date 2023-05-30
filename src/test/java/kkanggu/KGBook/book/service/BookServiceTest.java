@@ -19,8 +19,8 @@ import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.book.repository.BookOwnerOrderRepository;
 import kkanggu.KGBook.book.repository.BookRepository;
 import kkanggu.KGBook.common.aws.ImageController;
-import kkanggu.KGBook.user.controller.UserController;
 import kkanggu.KGBook.user.entity.UserEntity;
+import kkanggu.KGBook.user.service.UserService;
 
 
 @SpringBootTest
@@ -29,7 +29,7 @@ import kkanggu.KGBook.user.entity.UserEntity;
 class BookServiceTest {
 	private final BookRepository bookRepository;
 	private final BookService bookService;
-	private final UserController userController;
+	private final UserService userService;
 	private final BookOwnerOrderRepository bookOwnerOrderRepository;
 	private final JdbcTemplate jdbcTemplate;
 	private final ImageController imageController;
@@ -37,13 +37,13 @@ class BookServiceTest {
 	@Autowired
 	public BookServiceTest(BookRepository bookRepository,
 						   BookService bookService,
-						   UserController userController,
+						   UserService userService,
 						   BookOwnerOrderRepository bookOwnerOrderRepository,
 						   JdbcTemplate jdbcTemplate,
 						   ImageController imageController) {
 		this.bookRepository = bookRepository;
 		this.bookService = bookService;
-		this.userController = userController;
+		this.userService = userService;
 		this.bookOwnerOrderRepository = bookOwnerOrderRepository;
 		this.jdbcTemplate = jdbcTemplate;
 		this.imageController = imageController;
@@ -158,7 +158,7 @@ class BookServiceTest {
 		// given
 		insertBooksBeforeTest();
 		UserEntity user = new UserEntity(1L, "username", "pass", null, null, null, LocalDate.now());
-		Long userId = userController.saveUser(user);
+		Long userId = userService.saveUser(user);
 		for (int i = 0; i < 4; ++i) {
 			bookOwnerOrderRepository.saveBookUserOwn(1357924680130L + i, userId);
 		}
