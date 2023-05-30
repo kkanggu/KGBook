@@ -31,6 +31,14 @@ public class UserService {
 		return userRepository.findById(id);
 	}
 
+	public List<UserEntity> findUsersHaveBook(long isbn) {
+		List<Long> userIds = this.findUserIdByIsbn(isbn);
+
+		return userIds.stream()
+				.map(userRepository::findById)
+				.toList();
+	}
+
 	public List<Long> findUserIdByIsbn(long isbn) {
 		return bookOwnerOrderRepository.findUserIdByIsbn(isbn);
 	}
