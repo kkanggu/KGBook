@@ -31,6 +31,14 @@ public class BookService {
 		return bookRepository.findByIsbn(isbn);
 	}
 
+	public List<BookEntity> findBooksUserOwn(long userId) {
+		List<Long> isbns = bookOwnerOrderRepository.findIsbnByUserId(userId);
+
+		return isbns.stream()
+				.map(bookRepository::findByIsbn)
+				.toList();
+	}
+
 	public List<Long> findIsbnByUserId(long userId) {
 		return bookOwnerOrderRepository.findIsbnByUserId(userId);
 	}
