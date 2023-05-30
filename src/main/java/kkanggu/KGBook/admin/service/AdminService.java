@@ -19,25 +19,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kkanggu.KGBook.admin.dto.ApiBookDto;
-import kkanggu.KGBook.book.controller.BookController;
 import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
+import kkanggu.KGBook.book.service.BookService;
 import kkanggu.KGBook.common.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class AdminService {
-	private final BookController bookController;
+	private final BookService bookService;
 	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
 	private final Keys keys;
 
-	public AdminService(BookController bookController,
+	public AdminService(BookService bookService,
 	                    RestTemplate restTemplate,
 	                    ObjectMapper objectMapper,
 	                    Keys keys) {
-		this.bookController = bookController;
+		this.bookService = bookService;
 		this.restTemplate = restTemplate;
 		this.objectMapper = objectMapper;
 		this.keys = keys;
@@ -84,11 +84,11 @@ public class AdminService {
 	public void saveBooks(List<RenderBookDto> books) {
 		books.stream()
 				.map(this::convertRenderBookDtoToBookEntity)
-				.forEach(bookController::saveBook);
+				.forEach(bookService::saveBook);
 	}
 
 	public List<RenderBookDto> findAll() {
-		List<BookEntity> books = bookController.findAll();
+		List<BookEntity> books = bookService.findAll();
 
 		return books.stream()
 				.map(this::convertBookEntityToRenderBookDto)
@@ -96,13 +96,13 @@ public class AdminService {
 	}
 
 	public RenderBookDto findByIsbn(long isbn) {
-		BookEntity book = bookController.findByIsbn(isbn);
+		BookEntity book = bookService.findByIsbn(isbn);
 
 		return null != book ? convertBookEntityToRenderBookDto(book) : null;
 	}
 
 	public void updateBook(RenderBookDto renderBookDto) {
-		bookController.updateBook(convertRenderBookDtoToBookEntity(renderBookDto));
+		bookService.updateBook(convertRenderBookDtoToBookEntity(renderBookDto));
 	}
 
 	public List<RenderBookDto> convertApiBookDtoToRenderBookDto(List<ApiBookDto> apiBookDtos) {

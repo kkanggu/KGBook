@@ -27,9 +27,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kkanggu.KGBook.admin.dto.ApiBookDto;
-import kkanggu.KGBook.book.controller.BookController;
 import kkanggu.KGBook.book.dto.RenderBookDto;
 import kkanggu.KGBook.book.entity.BookEntity;
+import kkanggu.KGBook.book.service.BookService;
 import kkanggu.KGBook.common.Keys;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +38,7 @@ class AdminServiceTest {
 	private AdminService adminService;
 
 	@Mock
-	private BookController bookController;
+	private BookService bookService;
 
 	@Mock
 	private ObjectMapper objectMapper;
@@ -138,7 +138,7 @@ class AdminServiceTest {
 
 	@Test
 	@DisplayName("검색 결과가 아무것도 없을 경우")
-	void convertXmlToApiBookDtoNoItem() throws IOException {
+	void convertXmlToApiBookDtoNoItem() {
 		String booksXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><rss version=\"2.0\"><channel>" +
 				"<title>Naver Open API - book_adv ::&apos;&apos;</title><link>https://search.naver.com</link>" +
 				"<description>Naver Search Result</description><lastBuildDate>Mon, 29 May 2023 23:40:54 +0900" +
@@ -161,11 +161,11 @@ class AdminServiceTest {
 		RenderBookDto book = getRenderBookDto();
 		books.add(book);
 
-		when(bookController.saveBook(any())).thenReturn(null);
+		when(bookService.saveBook(any())).thenReturn(null);
 		adminService.saveBooks(books);
 
-		verify(bookController).saveBook(bookEntityArgumentCaptor.capture());
-		verify(bookController, times(books.size())).saveBook(any());
+		verify(bookService).saveBook(bookEntityArgumentCaptor.capture());
+		verify(bookService, times(books.size())).saveBook(any());
 		BookEntity bookEntity = bookEntityArgumentCaptor.getValue();
 		assertAll(
 				() -> assertThat(bookEntity).isNotNull(),
@@ -187,7 +187,7 @@ class AdminServiceTest {
 		BookEntity book = getBookEntity();
 		books.add(book);
 
-		when(bookController.findAll()).thenReturn(books);
+		when(bookService.findAll()).thenReturn(books);
 		List<RenderBookDto> renderBookDtos = adminService.findAll();
 
 		assertAll(
@@ -209,7 +209,7 @@ class AdminServiceTest {
 	void findAllEmpty() {
 		List<BookEntity> books = new ArrayList<>();
 
-		when(bookController.findAll()).thenReturn(books);
+		when(bookService.findAll()).thenReturn(books);
 		List<RenderBookDto> renderBookDtos = adminService.findAll();
 
 		assertAll(
@@ -223,7 +223,7 @@ class AdminServiceTest {
 	void findByIsbnExist() {
 		BookEntity book = getBookEntity();
 
-		when(bookController.findByIsbn(book.getIsbn())).thenReturn(book);
+		when(bookService.findByIsbn(book.getIsbn())).thenReturn(book);
 		RenderBookDto renderBookDto = adminService.findByIsbn(book.getIsbn());
 
 		assertAll(
@@ -244,7 +244,7 @@ class AdminServiceTest {
 	void findByIsbnNoBook() {
 		long isbn = 135L;
 
-		when(bookController.findByIsbn(isbn)).thenReturn(null);
+		when(bookService.findByIsbn(isbn)).thenReturn(null);
 		RenderBookDto renderBookDto = adminService.findByIsbn(isbn);
 
 		assertAll(
@@ -257,11 +257,11 @@ class AdminServiceTest {
 	void updateBook() {
 		RenderBookDto book = getRenderBookDto();
 
-		doNothing().when(bookController).updateBook(any());
+		doNothing().when(bookService).updateBook(any());
 		adminService.updateBook(book);
 
-		verify(bookController).updateBook(bookEntityArgumentCaptor.capture());
-		verify(bookController, times(1)).updateBook(any());
+		verify(bookService).updateBook(bookEntityArgumentCaptor.capture());
+		verify(bookService, times(1)).updateBook(any());
 		BookEntity bookEntity = bookEntityArgumentCaptor.getValue();
 		assertAll(
 				() -> assertThat(bookEntity).isNotNull(),
