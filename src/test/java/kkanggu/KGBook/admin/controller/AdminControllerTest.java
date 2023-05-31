@@ -67,14 +67,10 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/books, 서적 조회")
 	void books() throws Exception {
-		// given
 		List<RenderBookDto> books = new ArrayList<>();
 		books.add(getRenderBookDto());
-
-		// when
 		when(adminService.findAll()).thenReturn(books);
 
-		// then
 		mockMvc.perform(get("/admin/books"))
 				.andExpect(status().isOk())
 				.andExpect(view().name("admin/books"))
@@ -85,13 +81,9 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/book/{isbn}, 서적 상세 조회 성공")
 	void getBookOk() throws Exception {
-		// given
 		RenderBookDto book = getRenderBookDto();
-
-		// when
 		when(adminService.findByIsbn(book.getIsbn())).thenReturn(book);
 
-		// then
 		mockMvc.perform(get("/admin/book/{isbn}", book.getIsbn()))
 				.andExpect(status().isOk())
 				.andExpect(view().name("admin/book"))
@@ -104,13 +96,9 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/book/{isbn}, 서적 상세 조회 실패")
 	void getBookFail() throws Exception {
-		// given
 		long isbn = 135L;
-
-		// when
 		when(adminService.findByIsbn(isbn)).thenReturn(null);
 
-		// then
 		mockMvc.perform(get("/admin/book/{isbn}", isbn))
 				.andExpect(status().isOk())
 				.andExpect(view().name("admin/books"));
@@ -119,13 +107,9 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("POST /admin/book/{isbn}, 서적 업데이트")
 	void updateBook() throws Exception {
-		// given
 		RenderBookDto book = getRenderBookDto();
-
-		// when
 		doNothing().when(adminService).updateBook(book);
 
-		// then
 		mockMvc.perform(post("/admin/book/{isbn}", book.getIsbn()))
 				.andExpect(status().is3xxRedirection())
 				.andExpect(redirectedUrl("/admin/book/" + book.getIsbn()));
@@ -134,13 +118,9 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/book/{isbn}/edit, 서적 수정 페이지")
 	void editBook() throws Exception {
-		// given
 		RenderBookDto book = getRenderBookDto();
-
-		// when
 		when(adminService.findByIsbn(book.getIsbn())).thenReturn(book);
 
-		// then
 		mockMvc.perform(get("/admin/book/{isbn}/edit", book.getIsbn()))
 				.andExpect(status().isOk())
 				.andExpect(view().name("admin/book"))
@@ -161,7 +141,6 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("POST /admin/book/new, 신규 서적 검색 성공")
 	void fetchNewBookOk() throws Exception {
-		// given
 		List<ApiBookDto> apiBookDtos = new ArrayList<>();
 		List<RenderBookDto> renderBookDtos = new ArrayList<>();
 		renderBookDtos.add(getRenderBookDto());
@@ -169,13 +148,10 @@ class AdminControllerTest {
 		String keyword = "Test";
 		String searchRecent = "asdf";
 		boolean isSearchRecent = "on".equals(searchRecent);
-
-		// when
 		when(adminService.fetchBookFromNaverApi(keyword, isSearchRecent)).thenReturn(responseEntity);
 		when(adminService.convertXmlToApiBookDto(responseEntity.getBody())).thenReturn(apiBookDtos);
 		when(adminService.convertApiBookDtoToRenderBookDto(apiBookDtos)).thenReturn(renderBookDtos);
 
-		// then
 		mockMvc.perform(post("/admin/book/new")
 						.param("keyword", keyword)
 						.param("searchRecent", searchRecent))
@@ -188,16 +164,12 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("POST /admin/book/new, 신규 서적 검색 실패")
 	void fetchNewBookFail() throws Exception {
-		// given
 		ResponseEntity<String> responseEntity = ResponseEntity.badRequest().build();
 		String keyword = "Test";
 		String searchRecent = "asdf";
 		boolean isSearchRecent = "on".equals(searchRecent);
-
-		// when
 		when(adminService.fetchBookFromNaverApi(keyword, isSearchRecent)).thenReturn(responseEntity);
 
-		// then
 		mockMvc.perform(post("/admin/book/new")
 						.param("keyword", keyword)
 						.param("searchRecent", searchRecent))
@@ -208,13 +180,9 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/book/new/list, 검색한 신규 서적 전체 조회")
 	void listNewBooks() throws Exception {
-		// given
 		List<RenderBookDto> books = new ArrayList<>();
 		books.add(getRenderBookDto());
 
-		// when
-
-		// then
 		MvcResult mvcResult = mockMvc.perform(get("/admin/book/new/list")
 						.flashAttr("books", books))
 				.andExpect(status().isOk())
@@ -231,17 +199,13 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/book/new/{isbn}}, 검색한 신규 서적 개별 조회")
 	void getNewBook() throws Exception {
-		// given
 		List<RenderBookDto> books = new ArrayList<>();
 		books.add(getRenderBookDto());
 		books.add(getRenderBookDto());
 		books.get(1).setIsbn(1L);
 		MockHttpSession mockHttpSession = new MockHttpSession();
-
-		// when
 		mockHttpSession.setAttribute("books", books);
 
-		// then
 		mockMvc.perform(get("/admin/book/new/{isbn}", books.get(0).getIsbn())
 						.session(mockHttpSession))
 				.andExpect(status().isOk())
@@ -253,18 +217,14 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("POST /admin/book/new/{isbn}, 검색한 신규 서적 수정 성공")
 	void editNewBookOk() throws Exception {
-		// given
 		List<RenderBookDto> books = new ArrayList<>();
 		books.add(getRenderBookDto());
 		RenderBookDto renderBookDto = books.get(0);
 		renderBookDto.setTitle("changeTitle");
 		renderBookDto.setAuthor("changeAuthor");
 		MockHttpSession mockHttpSession = new MockHttpSession();
-
-		// when
 		mockHttpSession.setAttribute("books", books);
 
-		// then
 		MvcResult mvcResult = mockMvc.perform(post("/admin/book/new/{isbn}", books.get(0).getIsbn())
 						.flashAttr("renderBookDto", renderBookDto)
 						.session(mockHttpSession))
@@ -281,7 +241,6 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("POST /admin/book/new/save, 검색한 신규 서적 저장")
 	void saveNewBooks() throws Exception {
-		// given
 		List<RenderBookDto> books = new ArrayList<>();
 		List<RenderBookDto> renderBookDtos = new ArrayList<>();
 		books.add(getRenderBookDto());
@@ -292,12 +251,9 @@ class AdminControllerTest {
 		selectedBooks.add(true);
 		selectedBooks.add(false);
 		MockHttpSession mockHttpSession = new MockHttpSession();
-
-		// when
 		mockHttpSession.setAttribute("books", books);
 		doNothing().when(adminService).saveBooks(renderBookDtos);
 
-		// then
 		mockMvc.perform(post("/admin/book/new/save")
 						.flashAttr("selectedBooks", selectedBooks)
 						.session(mockHttpSession))

@@ -98,9 +98,9 @@ class AdminServiceTest {
 	@DisplayName("Naver API 호출")
 	void fetchBookFromNaverApi(boolean searchRecent) throws IOException {
 		String booksXml = Files.readString(Path.of("src", "test", "resources", "api-string-data.xml"));
-
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
 				.thenReturn(ResponseEntity.ok(booksXml));
+
 		ResponseEntity<String> response = adminService.fetchBookFromNaverApi("keyword", searchRecent);
 
 		assertAll(
@@ -160,8 +160,8 @@ class AdminServiceTest {
 		List<RenderBookDto> books = new ArrayList<>();
 		RenderBookDto book = getRenderBookDto();
 		books.add(book);
-
 		when(bookService.saveBook(any())).thenReturn(null);
+
 		adminService.saveBooks(books);
 
 		verify(bookService).saveBook(bookEntityArgumentCaptor.capture());
@@ -186,8 +186,8 @@ class AdminServiceTest {
 		List<BookEntity> books = new ArrayList<>();
 		BookEntity book = getBookEntity();
 		books.add(book);
-
 		when(bookService.findAll()).thenReturn(books);
+
 		List<RenderBookDto> renderBookDtos = adminService.findAll();
 
 		assertAll(
@@ -208,8 +208,8 @@ class AdminServiceTest {
 	@DisplayName("기존 서적 전체 가져오기, 서적이 없을 경우")
 	void findAllEmpty() {
 		List<BookEntity> books = new ArrayList<>();
-
 		when(bookService.findAll()).thenReturn(books);
+
 		List<RenderBookDto> renderBookDtos = adminService.findAll();
 
 		assertAll(
@@ -222,8 +222,8 @@ class AdminServiceTest {
 	@DisplayName("Isbn을 이용하여 기존 서적 검색, 서적 존재")
 	void findByIsbnExist() {
 		BookEntity book = getBookEntity();
-
 		when(bookService.findByIsbn(book.getIsbn())).thenReturn(book);
+
 		RenderBookDto renderBookDto = adminService.findByIsbn(book.getIsbn());
 
 		assertAll(
@@ -243,8 +243,8 @@ class AdminServiceTest {
 	@DisplayName("Isbn을 이용하여 기존 서적 검색, 해당 Isbn을 가진 서적이 없을 경우")
 	void findByIsbnNoBook() {
 		long isbn = 135L;
-
 		when(bookService.findByIsbn(isbn)).thenReturn(null);
+
 		RenderBookDto renderBookDto = adminService.findByIsbn(isbn);
 
 		assertAll(
@@ -256,8 +256,8 @@ class AdminServiceTest {
 	@DisplayName("서적 정보 갱신")
 	void updateBook() {
 		RenderBookDto book = getRenderBookDto();
-
 		doNothing().when(bookService).updateBook(any());
+
 		adminService.updateBook(book);
 
 		verify(bookService).updateBook(bookEntityArgumentCaptor.capture());

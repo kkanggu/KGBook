@@ -49,8 +49,8 @@ class BookServiceTest {
 	@DisplayName("서적 저장")
 	void saveBook() {
 		BookEntity book = getBookEntity(135L);
-
 		when(bookRepository.saveBook(book)).thenReturn(book.getIsbn());
+
 		Long isbn = bookService.saveBook(book);
 
 		assertThat(isbn).isEqualTo(book.getIsbn());
@@ -63,8 +63,8 @@ class BookServiceTest {
 		books.add(getBookEntity(135L));
 		books.add(getBookEntity(1357L));
 		books.add(getBookEntity(13579L));
-
 		when(bookRepository.findAll()).thenReturn(books);
+
 		List<BookEntity> findBooks = bookRepository.findAll();
 
 		assertAll(
@@ -79,8 +79,8 @@ class BookServiceTest {
 	@DisplayName("전체 서적 가져오기, 서적이 없을 경우")
 	void findAllEmpty() {
 		List<BookEntity> books = new ArrayList<>();
-
 		when(bookRepository.findAll()).thenReturn(books);
+
 		List<BookEntity> findBooks = bookRepository.findAll();
 
 		assertAll(
@@ -93,8 +93,8 @@ class BookServiceTest {
 	@DisplayName("isbn을 이용하여 서적을 가져옴, 서적 존재")
 	void findByIsbnExist() {
 		BookEntity book = getBookEntity(13L);
-
 		when(bookRepository.findByIsbn(book.getIsbn())).thenReturn(book);
+
 		BookEntity findBook = bookRepository.findByIsbn(book.getIsbn());
 
 		assertAll(
@@ -107,6 +107,7 @@ class BookServiceTest {
 	@DisplayName("isbn을 이용하여 서적을 가져옴, 해당 isbn과 동일한 서적이 없을 경우")
 	void findByIsbnCantFind() {
 		when(bookRepository.findByIsbn(any())).thenReturn(null);
+
 		BookEntity findBook = bookRepository.findByIsbn(123L);
 
 		assertAll(
@@ -122,9 +123,9 @@ class BookServiceTest {
 		isbns.add(135L);
 		List<BookEntity> books = new ArrayList<>();
 		books.add(getBookEntity(isbns.get(0)));
-
 		when(bookOwnerOrderRepository.findIsbnByUserId(userid)).thenReturn(isbns);
 		when(bookRepository.findByIsbn(isbns.get(0))).thenReturn(books.get(0));
+
 		List<BookEntity> findBooks = bookService.findBooksUserOwn(userid);
 
 		assertAll(
@@ -140,8 +141,8 @@ class BookServiceTest {
 	void findBooksUserOwnUserHaveNothing() {
 		long userid = 1L;
 		List<Long> isbns = new ArrayList<>();
-
 		when(bookOwnerOrderRepository.findIsbnByUserId(userid)).thenReturn(isbns);
+
 		List<BookEntity> findBooks = bookService.findBooksUserOwn(userid);
 
 		assertAll(
@@ -156,9 +157,9 @@ class BookServiceTest {
 		long userid = 1L;
 		List<Long> isbns = new ArrayList<>();
 		isbns.add(135L);
-
 		when(bookOwnerOrderRepository.findIsbnByUserId(userid)).thenReturn(isbns);
 		when(bookRepository.findByIsbn(any())).thenReturn(null);
+
 		List<BookEntity> findBooks = bookService.findBooksUserOwn(userid);
 
 		assertAll(
