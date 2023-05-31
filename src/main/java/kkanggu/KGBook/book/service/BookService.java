@@ -1,6 +1,5 @@
 package kkanggu.KGBook.book.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -37,24 +36,6 @@ public class BookService {
 		return isbns.stream()
 				.map(bookRepository::findByIsbn)
 				.toList();
-	}
-
-	public List<Long> findIsbnByUserId(long userId) {
-		return bookOwnerOrderRepository.findIsbnByUserId(userId);
-	}
-
-	/**
-	 * If user own 10K, then 10K query will execute
-	 * This can lower performance
-	 */
-	public List<BookEntity> findByIsbn(List<Long> isbns) {
-		List<BookEntity> books = new ArrayList<>();
-		for (Long isbn : isbns) {
-			BookEntity book = bookRepository.findByIsbn(isbn);
-			books.add(book);
-		}
-
-		return books;
 	}
 
 	public void updateBook(BookEntity book) {

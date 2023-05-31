@@ -4,7 +4,6 @@ package kkanggu.KGBook.book.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +15,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import kkanggu.KGBook.book.entity.BookEntity;
-import kkanggu.KGBook.book.repository.BookOwnerOrderRepository;
 import kkanggu.KGBook.book.repository.BookRepository;
 import kkanggu.KGBook.common.aws.ImageController;
-import kkanggu.KGBook.user.entity.UserEntity;
-import kkanggu.KGBook.user.service.UserService;
 
 
 @SpringBootTest
@@ -29,22 +25,16 @@ import kkanggu.KGBook.user.service.UserService;
 class BookServiceTest {
 	private final BookRepository bookRepository;
 	private final BookService bookService;
-	private final UserService userService;
-	private final BookOwnerOrderRepository bookOwnerOrderRepository;
 	private final JdbcTemplate jdbcTemplate;
 	private final ImageController imageController;
 
 	@Autowired
 	public BookServiceTest(BookRepository bookRepository,
 						   BookService bookService,
-						   UserService userService,
-						   BookOwnerOrderRepository bookOwnerOrderRepository,
 						   JdbcTemplate jdbcTemplate,
 						   ImageController imageController) {
 		this.bookRepository = bookRepository;
 		this.bookService = bookService;
-		this.userService = userService;
-		this.bookOwnerOrderRepository = bookOwnerOrderRepository;
 		this.jdbcTemplate = jdbcTemplate;
 		this.imageController = imageController;
 	}
@@ -150,58 +140,5 @@ class BookServiceTest {
 
 		boolean isDeleted = imageController.deleteImage(findBook.getS3ImageUrl());
 		assertThat(isDeleted).isEqualTo(true);
-	}
-
-	@Test
-	@DisplayName("특정 유저가 가지고 있는 서적의 Isbn을 가져옴")
-	void findIsbnByUserIdTest() {
-		// given
-		insertBooksBeforeTest();
-		UserEntity user = new UserEntity(1L, "username", "pass", null, null, null, LocalDate.now());
-		Long userId = userService.saveUser(user);
-		for (int i = 0; i < 4; ++i) {
-			bookOwnerOrderRepository.saveBookUserOwn(1357924680130L + i, userId);
-		}
-
-		// when
-		List<Long> isbns = bookService.findIsbnByUserId(userId);
-
-		// then
-		assertThat(isbns.size()).isEqualTo(4);
-		for (int i = 0; i < 4; ++i) {
-			assertThat(isbns.get(i)).isEqualTo(1357924680130L + i);
-		}
-
-		List<BookEntity> savedBooks = bookRepository.findAll();
-		for (BookEntity book : savedBooks) {
-			boolean isDeleted = imageController.deleteImage(book.getS3ImageUrl());
-			assertThat(isDeleted).isEqualTo(true);
-		}
-	}
-
-	@Test
-	@DisplayName("isbn들을 통해 서적을 가져옴")
-	void findByIsbnsTest() {
-		// given
-		insertBooksBeforeTest();
-		List<Long> isbns = new ArrayList<>();
-		for (int i = 0; i < 4; ++i) {
-			isbns.add(1357924680130L + i);
-		}
-
-		// when
-		List<BookEntity> books = bookService.findByIsbn(isbns);
-
-		// then
-		assertThat(books.size()).isEqualTo(4);
-		for (int i = 0; i < 4; ++i) {
-			assertThat(books.get(i).getIsbn()).isEqualTo(isbns.get(i));
-		}
-
-		List<BookEntity> savedBooks = bookRepository.findAll();
-		for (BookEntity book : savedBooks) {
-			boolean isDeleted = imageController.deleteImage(book.getS3ImageUrl());
-			assertThat(isDeleted).isEqualTo(true);
-		}
 	}
 }
