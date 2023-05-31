@@ -5,13 +5,16 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import kkanggu.KGBook.book.entity.BookEntity;
 import kkanggu.KGBook.common.aws.ImageController;
 import kkanggu.KGBook.sql.BookSql;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Repository
 public class JdbcBookRepository implements BookRepository {
 	private final JdbcTemplate jdbcTemplate;
@@ -47,7 +50,15 @@ public class JdbcBookRepository implements BookRepository {
 
 	@Override
 	public BookEntity findByIsbn(Long isbn) {
-		return jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), isbn);
+		BookEntity book = null;
+
+		try {
+			book = jdbcTemplate.queryForObject(BookSql.SELECT_BOOKS_BY_ISBN, rowMapper(), isbn);
+		} catch (EmptyResultDataAccessException e) {
+			log.info("No book exist with isbn {}", isbn);
+		}
+
+		return book;
 	}
 
 	@Override
