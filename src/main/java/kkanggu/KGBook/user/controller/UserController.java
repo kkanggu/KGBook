@@ -1,15 +1,7 @@
 package kkanggu.KGBook.user.controller;
 
-import java.util.List;
+import org.springframework.stereotype.Controller;
 
-import kkanggu.KGBook.user.entity.UserEntity;
-
-public interface UserController {
-	Long saveUser(UserEntity user);
-
-	List<UserEntity> findAll();
-
-	UserEntity findById(Long id);
-
-	List<UserEntity> findUsersHaveBook(long isbn);
+@Controller
+public class UserController {
 }
