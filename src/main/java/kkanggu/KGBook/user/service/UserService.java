@@ -1,6 +1,5 @@
 package kkanggu.KGBook.user.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -32,28 +31,10 @@ public class UserService {
 	}
 
 	public List<UserEntity> findUsersHaveBook(long isbn) {
-		List<Long> userIds = this.findUserIdByIsbn(isbn);
+		List<Long> userIds = bookOwnerOrderRepository.findUserIdByIsbn(isbn);
 
 		return userIds.stream()
 				.map(userRepository::findById)
 				.toList();
-	}
-
-	public List<Long> findUserIdByIsbn(long isbn) {
-		return bookOwnerOrderRepository.findUserIdByIsbn(isbn);
-	}
-
-	/**
-	 * If over 10K user own same book, then 10K query will execute
-	 * This can lower performance
-	 */
-	public List<UserEntity> findById(List<Long> userIds) {
-		List<UserEntity> users = new ArrayList<>();
-		for (Long userId : userIds) {
-			UserEntity user = userRepository.findById(userId);
-			users.add(user);
-		}
-
-		return users;
 	}
 }
