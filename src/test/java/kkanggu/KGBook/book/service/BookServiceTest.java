@@ -2,143 +2,170 @@ package kkanggu.KGBook.book.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import kkanggu.KGBook.book.entity.BookEntity;
+import kkanggu.KGBook.book.repository.BookOwnerOrderRepository;
 import kkanggu.KGBook.book.repository.BookRepository;
-import kkanggu.KGBook.common.aws.ImageController;
 
-
-@SpringBootTest
-@ActiveProfiles("local")
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class BookServiceTest {
-	private final BookRepository bookRepository;
-	private final BookService bookService;
-	private final JdbcTemplate jdbcTemplate;
-	private final ImageController imageController;
+	@InjectMocks
+	private BookService bookService;
 
-	@Autowired
-	public BookServiceTest(BookRepository bookRepository,
-						   BookService bookService,
-						   JdbcTemplate jdbcTemplate,
-						   ImageController imageController) {
-		this.bookRepository = bookRepository;
-		this.bookService = bookService;
-		this.jdbcTemplate = jdbcTemplate;
-		this.imageController = imageController;
-	}
+	@Mock
+	private BookRepository bookRepository;
 
-	@BeforeEach
-	void setup() {
-		jdbcTemplate.update("DELETE FROM BOOK");
-	}
+	@Mock
+	private BookOwnerOrderRepository bookOwnerOrderRepository;
 
-	void insertBooksBeforeTest() {
-		for (int i = 0; i < 4; ++i) {
-			BookEntity book = BookEntity.builder()
-					.isbn(1357924680130L + i)
-					.title("book" + (i + 1))
-					.author("author" + (i + 1))
-					.publisher("publisher")
-					.originPrice(13579)
-					.publishDate(LocalDate.now()).createDate(LocalDate.now())
-					.description("description")
-					.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
-					.build();
-			bookRepository.saveBook(book);
-		}
+	private BookEntity getBookEntity(Long isbn) {
+		return BookEntity.builder()
+				.isbn(isbn)
+				.title("book")
+				.author("author")
+				.publisher("publisher")
+				.originPrice(13579)
+				.publishDate(LocalDate.now())
+				.description("description")
+				.s3ImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+				.build();
 	}
 
 	@Test
 	@DisplayName("서적 저장")
 	void saveBook() {
-		// when
-		BookEntity book = BookEntity.builder()
-				.isbn(1357924680134L)
-				.title("title")
-				.author("author")
-				.publisher("publisher")
-				.originPrice(13579)
-				.publishDate(LocalDate.now())
-				.createDate(LocalDate.now())
-				.description("description")
-				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
-				.build();
+		BookEntity book = getBookEntity(135L);
 
-		// given
+		when(bookRepository.saveBook(book)).thenReturn(book.getIsbn());
 		Long isbn = bookService.saveBook(book);
 
-		// then
-		assertThat(isbn).isNotNull();
 		assertThat(isbn).isEqualTo(book.getIsbn());
-
-		BookEntity savedBook = bookRepository.findByIsbn(isbn);
-		boolean isDeleted = imageController.deleteImage(savedBook.getS3ImageUrl());
-		assertThat(isDeleted).isEqualTo(true);
 	}
 
 	@Test
-	@DisplayName("DB에서 서적 정보를 가져옴")
-	void findAllTest() {
-		// given
-		insertBooksBeforeTest();
+	@DisplayName("전체 서적 가져오기, 서적 존재")
+	void findAllExist() {
+		List<BookEntity> books = new ArrayList<>();
+		books.add(getBookEntity(135L));
+		books.add(getBookEntity(1357L));
+		books.add(getBookEntity(13579L));
 
-		// when
-		List<BookEntity> books = bookService.findAll();
+		when(bookRepository.findAll()).thenReturn(books);
+		List<BookEntity> findBooks = bookRepository.findAll();
 
-		// then
-		assertThat(books.size()).isEqualTo(4);
-
-		for (BookEntity book : books) {
-			boolean isDeleted = imageController.deleteImage(book.getS3ImageUrl());
-			assertThat(isDeleted).isEqualTo(true);
-		}
+		assertAll(
+				() -> assertThat(findBooks).isNotNull(),
+				() -> assertThat(findBooks.size()).isEqualTo(books.size()),
+				() -> IntStream.range(0, findBooks.size())
+						.forEach(i -> assertThat(findBooks.get(i)).isEqualTo(books.get(i)))
+		);
 	}
 
 	@Test
-	@DisplayName("DB에서 isbn을 통해 서적을 가져옴")
-	void findByIsbnTest() {
-		// given
-		BookEntity book = BookEntity.builder()
-				.isbn(1357924680134L)
-				.title("title")
-				.author("author")
-				.publisher("publisher")
-				.originPrice(13579)
-				.publishDate(LocalDate.now())
-				.createDate(LocalDate.now())
-				.description("description")
-				.originImageUrl("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
-				.build();
-		bookRepository.saveBook(book);
+	@DisplayName("전체 서적 가져오기, 서적이 없을 경우")
+	void findAllEmpty() {
+		List<BookEntity> books = new ArrayList<>();
 
-		// when
-		BookEntity findBook = bookService.findByIsbn(book.getIsbn());
+		when(bookRepository.findAll()).thenReturn(books);
+		List<BookEntity> findBooks = bookRepository.findAll();
 
-		// then
-		assertThat(findBook).isNotNull();
-		assertThat(book.getIsbn()).isEqualTo(findBook.getIsbn());
-		assertThat(book.getTitle()).isEqualTo(findBook.getTitle());
-		assertThat(book.getAuthor()).isEqualTo(findBook.getAuthor());
-		assertThat(book.getPublisher()).isEqualTo(findBook.getPublisher());
-		assertThat(book.getOriginPrice()).isEqualTo(findBook.getOriginPrice());
-		assertThat(book.getPublishDate()).isEqualTo(findBook.getPublishDate());
-		assertThat(book.getDescription()).isEqualTo(findBook.getDescription());
-		assertThat(book.getOriginImageUrl()).isEqualTo(findBook.getOriginImageUrl());
-		assertThat(findBook.getS3ImageUrl()).isNotNull();
+		assertAll(
+				() -> assertThat(findBooks).isNotNull(),
+				() -> assertThat(findBooks.size()).isEqualTo(0)
+		);
+	}
 
-		boolean isDeleted = imageController.deleteImage(findBook.getS3ImageUrl());
-		assertThat(isDeleted).isEqualTo(true);
+	@Test
+	@DisplayName("isbn을 이용하여 서적을 가져옴, 서적 존재")
+	void findByIsbnExist() {
+		BookEntity book = getBookEntity(13L);
+
+		when(bookRepository.findByIsbn(book.getIsbn())).thenReturn(book);
+		BookEntity findBook = bookRepository.findByIsbn(book.getIsbn());
+
+		assertAll(
+				() -> assertThat(findBook).isNotNull(),
+				() -> assertThat(findBook).isEqualTo(book)
+		);
+	}
+
+	@Test
+	@DisplayName("isbn을 이용하여 서적을 가져옴, 해당 isbn과 동일한 서적이 없을 경우")
+	void findByIsbnCantFind() {
+		when(bookRepository.findByIsbn(any())).thenReturn(null);
+		BookEntity findBook = bookRepository.findByIsbn(123L);
+
+		assertAll(
+				() -> assertThat(findBook).isNull()
+		);
+	}
+
+	@Test
+	@DisplayName("특정 User가 소유중인 서적을 가져옴, 서적 존재")
+	void findBooksUserOwnExist() {
+		long userid = 1L;
+		List<Long> isbns = new ArrayList<>();
+		isbns.add(135L);
+		List<BookEntity> books = new ArrayList<>();
+		books.add(getBookEntity(isbns.get(0)));
+
+		when(bookOwnerOrderRepository.findIsbnByUserId(userid)).thenReturn(isbns);
+		when(bookRepository.findByIsbn(isbns.get(0))).thenReturn(books.get(0));
+		List<BookEntity> findBooks = bookService.findBooksUserOwn(userid);
+
+		assertAll(
+				() -> assertThat(findBooks).isNotNull(),
+				() -> assertThat(findBooks.size()).isEqualTo(books.size()),
+				() -> IntStream.range(0, findBooks.size())
+						.forEach(i -> assertThat(findBooks.get(i)).isEqualTo(books.get(i)))
+		);
+	}
+
+	@Test
+	@DisplayName("특정 User가 소유중인 서적을 가져옴, 유저가 소유중인 서적이 없을 경우")
+	void findBooksUserOwnUserHaveNothing() {
+		long userid = 1L;
+		List<Long> isbns = new ArrayList<>();
+
+		when(bookOwnerOrderRepository.findIsbnByUserId(userid)).thenReturn(isbns);
+		List<BookEntity> findBooks = bookService.findBooksUserOwn(userid);
+
+		assertAll(
+				() -> assertThat(findBooks).isNotNull(),
+				() -> assertThat(findBooks.size()).isEqualTo(0)
+		);
+	}
+
+	@Test
+	@DisplayName("특정 User가 소유중인 서적을 가져옴, 유저가 소유중인 서적의 isbn을 이용하더라도 서적을 못 찾을 경우. 해당 상황은 발생해서는 안 됨")
+	void findBooksUserOwnCantFindBook() {
+		long userid = 1L;
+		List<Long> isbns = new ArrayList<>();
+		isbns.add(135L);
+
+		when(bookOwnerOrderRepository.findIsbnByUserId(userid)).thenReturn(isbns);
+		when(bookRepository.findByIsbn(any())).thenReturn(null);
+		List<BookEntity> findBooks = bookService.findBooksUserOwn(userid);
+
+		assertAll(
+				() -> assertThat(findBooks).isNotNull(),
+				() -> assertThat(findBooks.size()).isEqualTo(isbns.size()),
+				() -> IntStream.range(0, findBooks.size())
+						.forEach(i -> assertThat(findBooks.get(i)).isNull())
+		);
 	}
 }
