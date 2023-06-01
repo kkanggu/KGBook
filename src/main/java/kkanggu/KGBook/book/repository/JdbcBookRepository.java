@@ -35,7 +35,7 @@ public class JdbcBookRepository implements BookRepository {
 		}
 
 		Object[] params = {book.getIsbn(), book.getTitle(), book.getAuthor(), book.getPublisher(),
-				book.getOriginPrice(), book.getDiscountPrice(), book.getDiscountRate(), book.getDiscountRate(),
+				book.getOriginPrice(), book.getDiscountPrice(), book.getDiscountRate(), book.getDiscountType(),
 				book.getPublishDate(), book.getCreateDate(), book.getDescription(), book.getOriginImageUrl(),
 				s3ImageUrl};
 		int rows = jdbcTemplate.update(BookSql.CREATE_BOOK, params);
