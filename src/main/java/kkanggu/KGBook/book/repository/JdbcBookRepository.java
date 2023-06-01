@@ -2,7 +2,6 @@ package kkanggu.KGBook.book.repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,9 +20,9 @@ public class JdbcBookRepository implements BookRepository {
 	private final ImageController imageController;
 
 	@Autowired
-	public JdbcBookRepository(DataSource dataSource,
+	public JdbcBookRepository(JdbcTemplate jdbcTemplate,
 							  ImageController imageController) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.jdbcTemplate = jdbcTemplate;
 		this.imageController = imageController;
 	}
 
