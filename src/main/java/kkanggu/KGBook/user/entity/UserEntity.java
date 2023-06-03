@@ -2,11 +2,13 @@ package kkanggu.KGBook.user.entity;
 
 import java.time.LocalDate;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class UserEntity {
 	private Long id;
 	private String username;
@@ -15,9 +17,6 @@ public class UserEntity {
 	private Integer age;
 	private String birth;
 	private LocalDate createDate;
-
-	public UserEntity() {
-	}
 
 	public UserEntity(Long id, String username, String password, String gender, Integer age, String birth, LocalDate createDate) {
 		this.id = id;

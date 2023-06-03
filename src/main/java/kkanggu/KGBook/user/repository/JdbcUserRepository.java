@@ -37,28 +37,23 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	public List<UserEntity> findAll() {
-		List<UserEntity> users = jdbcTemplate.query(BookSql.SELECT_USERS, rowMapper());
-		return users;
+		return jdbcTemplate.query(BookSql.SELECT_USERS, rowMapper());
 	}
 
 	@Override
 	public UserEntity findById(Long id) {
-		UserEntity user = jdbcTemplate.queryForObject(BookSql.SELECT_USER_BY_ID, rowMapper(), id);
-		return user;
+		return jdbcTemplate.queryForObject(BookSql.SELECT_USER_BY_ID, rowMapper(), id);
 	}
 
 	private RowMapper<UserEntity> rowMapper() {
-		return (rs, rowNum) -> {
-			UserEntity user = new UserEntity();
-			user.setId(rs.getLong("id"));
-			user.setUsername(rs.getString("username"));
-			user.setPassword(rs.getString("password"));
-			user.setGender(rs.getString("gender"));
-			user.setAge(rs.getInt("age"));
-			user.setBirth(rs.getString("birth"));
-			user.setCreateDate(rs.getTimestamp("create_date").toLocalDateTime().toLocalDate());
-
-			return user;
-		};
+		return (rs, rowNum) -> UserEntity.builder()
+				.id(rs.getLong("id"))
+				.username(rs.getString("username"))
+				.password(rs.getString("password"))
+				.gender(rs.getString("gender"))
+				.age(rs.getInt("age"))
+				.birth(rs.getString("birth"))
+				.createDate(rs.getTimestamp("create_date").toLocalDateTime().toLocalDate())
+				.build();
 	}
 }
