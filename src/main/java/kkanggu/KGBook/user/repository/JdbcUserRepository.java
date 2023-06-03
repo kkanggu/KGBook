@@ -1,5 +1,6 @@
 package kkanggu.KGBook.user.repository;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -46,14 +47,18 @@ public class JdbcUserRepository implements UserRepository {
 	}
 
 	private RowMapper<UserEntity> rowMapper() {
-		return (rs, rowNum) -> UserEntity.builder()
-				.id(rs.getLong("id"))
-				.username(rs.getString("username"))
-				.password(rs.getString("password"))
-				.gender(rs.getString("gender"))
-				.age(rs.getInt("age"))
-				.birth(rs.getString("birth"))
-				.createDate(rs.getTimestamp("create_date").toLocalDateTime().toLocalDate())
-				.build();
+		return (rs, rowNum) -> {
+			Timestamp birth = rs.getTimestamp("birth");
+
+			return UserEntity.builder()
+					.id(rs.getLong("id"))
+					.username(rs.getString("username"))
+					.password(rs.getString("password"))
+					.gender(rs.getString("gender"))
+					.age(rs.getInt("age"))
+					.birth(null != birth ? birth.toLocalDateTime().toLocalDate() : null)
+					.createDate(rs.getTimestamp("create_date").toLocalDateTime().toLocalDate())
+					.build();
+		};
 	}
 }

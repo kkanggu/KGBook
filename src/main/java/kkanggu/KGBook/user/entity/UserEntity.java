@@ -15,10 +15,10 @@ public class UserEntity {
 	private String password;
 	private String gender;
 	private Integer age;
-	private String birth;
+	private LocalDate birth;
 	private LocalDate createDate;
 
-	public UserEntity(Long id, String username, String password, String gender, Integer age, String birth, LocalDate createDate) {
+	public UserEntity(Long id, String username, String password, String gender, Integer age, LocalDate birth, LocalDate createDate) {
 		this.id = id;
 		this.username = username;
 		this.password = password;

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS USER (
   password VARCHAR(60) NOT NULL,
   gender CHAR(1),
   age INT,
-  birth VARCHAR(8),
+  birth TIMESTAMP,
   create_date TIMESTAMP NOT NULL
 );
 
