@@ -1,93 +1,130 @@
 package kkanggu.KGBook.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import kkanggu.KGBook.book.repository.BookOwnerOrderRepository;
 import kkanggu.KGBook.user.entity.UserEntity;
 import kkanggu.KGBook.user.repository.UserRepository;
 
-@SpringBootTest
-@ActiveProfiles("local")
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-	private final JdbcTemplate jdbcTemplate;
-	private final UserService userService;
-	private final UserRepository userRepository;
+	@InjectMocks
+	private UserService service;
 
-	@Autowired
-	public UserServiceTest(JdbcTemplate jdbcTemplate,
-						   UserService userService,
-						   UserRepository userRepository) {
-		this.userService = userService;
-		this.jdbcTemplate = jdbcTemplate;
-		this.userRepository = userRepository;
-	}
+	@Mock
+	private UserRepository userRepository;
 
-	void insertUsersBeforeTest() {
-		for (int i = 0; i < 4; ++i) {
-			UserEntity user = new UserEntity(null, "user" + i, "password" + i, null, null, null, LocalDate.now());
-			userService.saveUser(user);
-		}
-	}
+	@Mock
+	private BookOwnerOrderRepository bookOwnerOrderRepository;
 
-	@BeforeEach
-	void setup() {
-		jdbcTemplate.update("DELETE FROM USER");
+	private UserEntity getUserEntity(Long id) {
+		return UserEntity.builder()
+				.id(id)
+				.username("user")
+				.password("password")
+				.gender("M")
+				.age(1)
+				.birth(LocalDate.of(2000, 1, 1))
+				.createDate(LocalDate.now())
+				.build();
 	}
 
 	@Test
-	@DisplayName("유저 정보를 받아 저장")
-	void saveUserTest() {
-		// given
-		UserEntity user = new UserEntity(null, "save", "ssave", null, null, null, LocalDate.now());
+	@DisplayName("유저 저장 성공")
+	void saveUserTestOk() {
+		UserEntity user = getUserEntity(13L);
+		when(userRepository.saveUser(user)).thenReturn(user.getId());
 
-		// when
-		Long id = userService.saveUser(user);
+		Long id = service.saveUser(user);
 
-		// then
-		UserEntity findUser = userRepository.findById(id);
-		assertThat(findUser.getId()).isEqualTo(id);
-		assertThat(findUser.getUsername()).isEqualTo(user.getUsername());
-		assertThat(findUser.getPassword()).isEqualTo(user.getPassword());
-		assertThat(findUser.getCreateDate()).isEqualTo(user.getCreateDate());
+		assertAll(
+				() -> assertThat(id).isNotNull(),
+				() -> assertThat(id).isEqualTo(user.getId())
+		);
 	}
 
 	@Test
-	@DisplayName("유저 전체 가져오기")
-	void findAllTest() {
-		// given
-		insertUsersBeforeTest();
+	@DisplayName("유저 저장 실패")
+	void saveUserTestFail() {
+		UserEntity user = getUserEntity(13L);
+		when(userRepository.saveUser(user)).thenReturn(null);
 
-		// when
-		List<UserEntity> users = userService.findAll();
+		Long id = service.saveUser(user);
 
-		// then
-		assertThat(users.size()).isEqualTo(4);
+		assertAll(
+				() -> assertThat(id).isNull()
+		);
 	}
 
 	@Test
-	@DisplayName("id를 이용하여 유저 가져오기")
-	void findByIdTest() {
-		// given
-		insertUsersBeforeTest();
-		UserEntity user = new UserEntity(null, "user", "passFindById", null, null, null, LocalDate.now());
-		Long id = userRepository.saveUser(user);
+	@DisplayName("유저 전체 가져오기 성공")
+	void findAllOk() {
+		List<UserEntity> users = new ArrayList<>();
+		users.add(getUserEntity(13L));
+		users.add(getUserEntity(135L));
+		users.add(getUserEntity(137L));
 
-		// when
-		UserEntity findUser = userService.findById(id);
+		when(userRepository.findAll()).thenReturn(users);
 
-		// then
-		assertThat(findUser.getId()).isEqualTo(id);
-		assertThat(findUser.getPassword()).isEqualTo(user.getPassword());
+		List<UserEntity> findUsers = service.findAll();
+
+		assertAll(
+				() -> assertThat(findUsers).isNotNull(),
+				() -> assertThat(findUsers.size()).isEqualTo(users.size()),
+				() -> IntStream.range(0, findUsers.size())
+						.forEach(i -> assertThat(findUsers.get(i)).isEqualTo(users.get(i)))
+		);
+	}
+
+	@Test
+	@DisplayName("유저 전체 가져오기 실패")
+	void findAllEmpty() {
+		when(userRepository.findAll()).thenReturn(new ArrayList<>());
+
+		List<UserEntity> findUsers = service.findAll();
+
+		assertAll(
+				() -> assertThat(findUsers).isNotNull(),
+				() -> assertThat(findUsers.isEmpty()).isTrue()
+		);
+	}
+
+	@Test
+	@DisplayName("id를 이용하여 유저 가져오기 성공")
+	void findByIdOk() {
+		UserEntity user = getUserEntity(13L);
+		when(userRepository.findById(user.getId())).thenReturn(user);
+
+		UserEntity findUser = service.findById(user.getId());
+
+		assertAll(
+				() -> assertThat(findUser).isNotNull(),
+				() -> assertThat(findUser).isEqualTo(user)
+		);
+	}
+
+	@Test
+	@DisplayName("id를 이용하여 유저 가져오기, 해당 id를 가진 유저가 없을 경우")
+	void findByIdCantFind() {
+		when(userRepository.findById(0L)).thenReturn(null);
+
+		UserEntity findUser = service.findById(0L);
+
+		assertAll(
+				() -> assertThat(findUser).isNull()
+		);
 	}
 }
