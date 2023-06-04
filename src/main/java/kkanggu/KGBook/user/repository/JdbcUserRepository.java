@@ -32,8 +32,14 @@ public class JdbcUserRepository implements UserRepository {
 	public Long saveUser(UserEntity user) {
 		Object[] params = {++id, user.getUsername(), user.getPassword(), user.getGender(),
 				user.getAge(), user.getBirth(), LocalDate.now()};
-		jdbcTemplate.update(BookSql.CREATE_USER, params);
-		return id;
+		int rows = jdbcTemplate.update(BookSql.CREATE_USER, params);
+
+		if (1 == rows) {
+			return id;
+		}
+
+		--id;
+		return null;
 	}
 
 	@Override
