@@ -1,105 +1,159 @@
 package kkanggu.KGBook.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.RowMapper;
 import kkanggu.KGBook.user.entity.UserEntity;
 
-@SpringBootTest
-@ActiveProfiles("local")
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class JdbcUserRepositoryTest {
-	private final JdbcTemplate jdbcTemplate;
-	private final JdbcUserRepository jdbcUserRepository;
+	private JdbcUserRepository repository;
 
-	@Autowired
-	public JdbcUserRepositoryTest(JdbcTemplate jdbcTemplate,
-								  JdbcUserRepository jdbcUserRepository) {
-		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcUserRepository = jdbcUserRepository;
-	}
+	@Mock
+	private JdbcTemplate jdbcTemplate;
 
-	void insertUsersBeforeTest() {
-		for (int i = 0; i < 4; ++i) {
-			UserEntity user = new UserEntity((long) i, "user" + i, "password" + i, null, null, null, LocalDate.now());
-			jdbcUserRepository.saveUser(user);
-		}
-	}
+	private final Long id = 13L;
 
 	@BeforeEach
 	void init() {
-		jdbcTemplate.update("DELETE FROM USER");
+		lenient().when(jdbcTemplate.queryForObject(anyString(), eq(Long.class))).thenReturn(id);
+		repository = new JdbcUserRepository(jdbcTemplate);
+	}
+
+	private UserEntity getUserEntity(Long id) {
+		return UserEntity.builder()
+				.id(id)
+				.username("user")
+				.password("password")
+				.gender("M")
+				.age(1)
+				.birth(LocalDate.of(2000, 1, 1))
+				.createDate(LocalDate.now())
+				.build();
 	}
 
 	@Test
-	@DisplayName("유저들 중 최대 id 가져오기")
-	void getMaxIdTest() {
-		// given
-		UserEntity user = new UserEntity(1L, "user", "temp", null, null, null, LocalDate.now());
+	@DisplayName("유저의 최대 id 가져오기 성공")
+	void getMaxIdOk() {
+		Long maxId = repository.getMaxId();
 
-		// when
-		Long id = jdbcUserRepository.saveUser(user);
-
-		// then
-		Long findId = jdbcUserRepository.getMaxId();
-
-		assertThat(id).isNotNull();
-		assertThat(findId).isEqualTo(id);
+		assertAll(
+				() -> assertThat(maxId).isNotNull(),
+				() -> assertThat(maxId).isEqualTo(id)
+		);
 	}
 
 	@Test
-	@DisplayName("유저 저장")
-	void saveUserTest() {
-		// given
-		UserEntity user = new UserEntity(1L, "user", "passSaveUser", null, null, null, LocalDate.now());
-		Long id = jdbcUserRepository.saveUser(user);
+	@DisplayName("유저의 최대 id 가져오기, 유저가 없을 경우")
+	void getMaxIdEmpty() {
+		when(jdbcTemplate.queryForObject(anyString(), eq(Long.class))).thenReturn(null);
+		repository = new JdbcUserRepository(jdbcTemplate);
 
-		// when
-		UserEntity findUser = jdbcUserRepository.findById(id);
+		Long maxId = repository.getMaxId();
 
-		// then
-		assertThat(findUser.getId()).isEqualTo(id);
-		assertThat(findUser.getUsername()).isEqualTo(user.getUsername());
-		assertThat(findUser.getPassword()).isEqualTo(user.getPassword());
-		assertThat(findUser.getCreateDate()).isEqualTo(user.getCreateDate());
+		assertAll(
+				() -> assertThat(maxId).isNotNull(),
+				() -> assertThat(maxId).isEqualTo(0)
+		);
 	}
 
 	@Test
-	@DisplayName("유저 전체 가져오기")
-	void findAllTest() {
-		// given
-		insertUsersBeforeTest();
+	@DisplayName("유저 저장 성공")
+	void saveUserOk() {
+		UserEntity user = getUserEntity(null);
+		when(jdbcTemplate.update(anyString(), ArgumentMatchers.<Object[]>any())).thenReturn(1);
 
-		// when
-		List<UserEntity> users = jdbcUserRepository.findAll();
+		Long newId = repository.saveUser(user);
 
-		// then
-		assertThat(users.size()).isEqualTo(4);
+		assertAll(
+				() -> assertThat(newId).isNotNull(),
+				() -> assertThat(newId).isEqualTo(id + 1)
+		);
 	}
 
 	@Test
-	@DisplayName("id를 이용하여 유저 가져오기")
-	void findByIdTest() {
-		// given
-		insertUsersBeforeTest();
-		UserEntity user = new UserEntity(5L, "user", "passFindById", null, null, null, LocalDate.now());
-		Long id = jdbcUserRepository.saveUser(user);
+	@DisplayName("유저 저장 실패")
+	void saveUserFail() {
+		UserEntity user = getUserEntity(null);
+		when(jdbcTemplate.update(anyString(), ArgumentMatchers.<Object[]>any())).thenReturn(0);
 
-		// when
-		UserEntity findUser = jdbcUserRepository.findById(id);
+		Long newId = repository.saveUser(user);
 
-		// then
-		assertThat(findUser.getId()).isEqualTo(id);
-		assertThat(findUser.getPassword()).isEqualTo(user.getPassword());
+		assertAll(
+				() -> assertThat(newId).isNull()
+		);
+	}
+
+	@Test
+	@DisplayName("전체 유저 가져오기 성공")
+	void findAllOk() {
+		List<UserEntity> users = new ArrayList<>();
+		UserEntity user = getUserEntity(135L);
+		users.add(user);
+		when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
+
+		List<UserEntity> findUsers = repository.findAll();
+
+		assertAll(
+				() -> assertThat(findUsers).isNotNull(),
+				() -> assertThat(findUsers.size()).isEqualTo(users.size()),
+				() -> IntStream.range(0, findUsers.size())
+						.forEach(i -> assertThat(findUsers.get(i)).isEqualTo(users.get(i)))
+		);
+	}
+
+	@Test
+	@DisplayName("전체 유저 가져오기 성공, 아무것도 없을 경우")
+	void findAllEmpty() {
+		when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList());
+
+		List<UserEntity> findUsers = repository.findAll();
+
+		assertAll(
+				() -> assertThat(findUsers).isNotNull(),
+				() -> assertThat(findUsers.isEmpty()).isTrue()
+		);
+	}
+
+	@Test
+	@DisplayName("Id를 이용하여 유저 가져오기 성공")
+	void findByIdOk() {
+		UserEntity user = getUserEntity(135L);
+		when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), any())).thenReturn(user);
+
+		UserEntity findUser = repository.findById(user.getId());
+
+		assertAll(
+				() -> assertThat(findUser).isNotNull(),
+				() -> assertThat(findUser).isEqualTo(user)
+		);
+	}
+
+	@Test
+	@DisplayName("Id를 이용하여 유저 가져오기 실패")
+	void findByIdFail() {
+		Long id = 13L;
+		when(jdbcTemplate.queryForObject(anyString(), any(RowMapper.class), any())).thenReturn(null);
+
+		UserEntity findUser = repository.findById(id);
+
+		assertAll(
+				() -> assertThat(findUser).isNull()
+		);
 	}
 }
