@@ -22,7 +22,6 @@ import kkanggu.KGBook.book.dto.RenderBookDto;
 import lombok.extern.slf4j.Slf4j;
 
 // TODO : Validation
-// TODO : With updateBook, need to pass BookEntity not RenderBookDto
 
 @Slf4j
 @Controller
@@ -85,6 +84,11 @@ public class AdminController {
 	public String editBook(@PathVariable long isbn, Model model) {
 		RenderBookDto book = adminService.findByIsbn(isbn);
 
+		if (null == book) {
+			log.warn("No book found with isbn {}", isbn);
+			return "redirect:/admin/books";
+		}
+
 		model.addAttribute("book", book);
 		model.addAttribute("isEdit", true);
 
@@ -128,12 +132,19 @@ public class AdminController {
 	@GetMapping("/book/new/{isbn}")
 	public String getNewBook(@PathVariable long isbn,
 							 HttpSession httpSession,
+							 RedirectAttributes redirectAttributes,
 							 Model model) {
 		List<RenderBookDto> books = (List<RenderBookDto>) httpSession.getAttribute("books");
 		RenderBookDto book = books.stream()
 				.filter(renderBookDto -> renderBookDto.getIsbn() == isbn)
 				.findAny()
 				.orElse(null);
+
+		if (null == book) {
+			redirectAttributes.addFlashAttribute("books", books);
+			log.warn("No new book found with isbn {}", isbn);
+			return "redirect:/admin/book/new/list";
+		}
 
 		model.addAttribute("book", book);
 
