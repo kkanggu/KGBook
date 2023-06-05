@@ -50,7 +50,7 @@ class AdminServiceTest {
 	private RestTemplate restTemplate;
 
 	@Captor
-	ArgumentCaptor<BookEntity> bookEntityArgumentCaptor;
+	private ArgumentCaptor<BookEntity> bookEntityArgumentCaptor;
 
 	private RenderBookDto getRenderBookDto() {
 		return RenderBookDto.builder()
@@ -95,8 +95,8 @@ class AdminServiceTest {
 
 	@ParameterizedTest
 	@ValueSource(booleans = {true, false})
-	@DisplayName("Naver API 호출")
-	void fetchBookFromNaverApi(boolean searchRecent) throws IOException {
+	@DisplayName("Naver API 호출 성공")
+	void fetchBookFromNaverApiOk(boolean searchRecent) throws IOException {
 		String booksXml = Files.readString(Path.of("src", "test", "resources", "api-string-data.xml"));
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
 				.thenReturn(ResponseEntity.ok(booksXml));
@@ -106,6 +106,20 @@ class AdminServiceTest {
 		assertAll(
 				() -> assertThat(response.getStatusCode().is2xxSuccessful()).isTrue(),
 				() -> assertThat(response.getBody()).isEqualTo(booksXml)
+		);
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = {true, false})
+	@DisplayName("Naver API 호출 실패")
+	void fetchBookFromNaverApiFail(boolean searchRecent) throws IOException {
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+				.thenReturn(ResponseEntity.badRequest().build());
+
+		ResponseEntity<String> response = adminService.fetchBookFromNaverApi("keyword", searchRecent);
+
+		assertAll(
+				() -> assertThat(response.getStatusCode().is2xxSuccessful()).isFalse()
 		);
 	}
 
@@ -181,8 +195,8 @@ class AdminServiceTest {
 	}
 
 	@Test
-	@DisplayName("기존 서적 전체 가져오기, 서적 존재")
-	void findAllExist() {
+	@DisplayName("기존 서적 전체 가져오기 성공")
+	void findAllOk() {
 		List<BookEntity> books = new ArrayList<>();
 		BookEntity book = getBookEntity();
 		books.add(book);
@@ -219,8 +233,8 @@ class AdminServiceTest {
 	}
 
 	@Test
-	@DisplayName("Isbn을 이용하여 기존 서적 검색, 서적 존재")
-	void findByIsbnExist() {
+	@DisplayName("Isbn을 이용하여 기존 서적 검색 성공")
+	void findByIsbnOk() {
 		BookEntity book = getBookEntity();
 		when(bookService.findByIsbn(book.getIsbn())).thenReturn(book);
 
@@ -241,7 +255,7 @@ class AdminServiceTest {
 
 	@Test
 	@DisplayName("Isbn을 이용하여 기존 서적 검색, 해당 Isbn을 가진 서적이 없을 경우")
-	void findByIsbnNoBook() {
+	void findByIsbnNotFound() {
 		long isbn = 135L;
 		when(bookService.findByIsbn(isbn)).thenReturn(null);
 
@@ -277,7 +291,7 @@ class AdminServiceTest {
 	}
 
 	@Test
-	@DisplayName("ApiBookDto를 RenderBookDto로 변환, ApiBookDto 존재")
+	@DisplayName("ApiBookDto를 RenderBookDto로 변환 성공")
 	void convertApiBookDtoToRenderBookDtoExist() {
 		List<ApiBookDto> books = new ArrayList<>();
 		ApiBookDto book = getApiBookDto();
