@@ -85,7 +85,7 @@ class BookServiceTest {
 
 		assertAll(
 				() -> assertThat(findBooks).isNotNull(),
-				() -> assertThat(findBooks.size()).isEqualTo(0)
+				() -> assertThat(findBooks.isEmpty()).isTrue()
 		);
 	}
 
@@ -147,7 +147,7 @@ class BookServiceTest {
 
 		assertAll(
 				() -> assertThat(findBooks).isNotNull(),
-				() -> assertThat(findBooks.size()).isEqualTo(0)
+				() -> assertThat(findBooks.isEmpty()).isTrue()
 		);
 	}
 

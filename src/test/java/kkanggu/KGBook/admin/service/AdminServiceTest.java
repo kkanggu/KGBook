@@ -132,7 +132,7 @@ class AdminServiceTest {
 
 		assertAll(
 				() -> assertThat(apiBookDtos).isNotNull(),
-				() -> assertThat(apiBookDtos.size()).isNotEqualTo(0)
+				() -> assertThat(apiBookDtos.isEmpty()).isFalse()
 		);
 	}
 
@@ -146,7 +146,7 @@ class AdminServiceTest {
 
 		assertAll(
 				() -> assertThat(apiBookDtos).isNotNull(),
-				() -> assertThat(apiBookDtos.size()).isEqualTo(0)
+				() -> assertThat(apiBookDtos.isEmpty()).isTrue()
 		);
 	}
 
@@ -162,7 +162,7 @@ class AdminServiceTest {
 
 		assertAll(
 				() -> assertThat(apiBookDtos).isNotNull(),
-				() -> assertThat(apiBookDtos.size()).isEqualTo(0)
+				() -> assertThat(apiBookDtos.isEmpty()).isTrue()
 		);
 
 		// TODO convertXmlToApiBookDto에서 item 항목이 없다면(검색 결과가 없다면) 추가 정보 넘겨주기
@@ -228,7 +228,7 @@ class AdminServiceTest {
 
 		assertAll(
 				() -> assertThat(renderBookDtos).isNotNull(),
-				() -> assertThat(renderBookDtos.size()).isEqualTo(0)
+				() -> assertThat(renderBookDtos.isEmpty()).isTrue()
 		);
 	}
 
@@ -314,7 +314,7 @@ class AdminServiceTest {
 
 		assertAll(
 				() -> assertThat(renderBookDtos).isNotNull(),
-				() -> assertThat(renderBookDtos.size()).isEqualTo(0)
+				() -> assertThat(renderBookDtos.isEmpty()).isTrue()
 		);
 	}
 }
