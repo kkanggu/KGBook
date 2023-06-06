@@ -62,8 +62,9 @@ public class JdbcBookRepository implements BookRepository {
 
 	@Override
 	public void updateBook(BookEntity book) {
-		Object[] params = {book.getTitle(), book.getAuthor(), book.getPublisher(), book.getPublishDate(),
-				book.getDescription(), book.getIsbn()};
+		Object[] params = {book.getTitle(), book.getAuthor(), book.getPublisher(), book.getOriginPrice(),
+				book.getDiscountPrice(), book.getDiscountRate(), book.getDiscountType(),
+				book.getPublishDate(), book.getDescription(), book.getIsbn()};
 		jdbcTemplate.update(BookSql.UPDATE_BOOK, params);
 	}
 
