@@ -33,10 +33,10 @@ public class AdminServiceIntegrationTest {
 	@Autowired
 	private ImageController imageController;
 
-	private RenderBookDto getRenderBookDto(Long isbn) {
+	private RenderBookDto getRenderBookDto(Long isbn, String title) {
 		return RenderBookDto.builder()
 				.isbn(isbn)
-				.title("book")
+				.title(title)
 				.author("author")
 				.publisher("publisher")
 				.originPrice(13579)
@@ -143,8 +143,8 @@ public class AdminServiceIntegrationTest {
 	@DisplayName("서적 저장 성공")
 	void saveBookOk() {
 		List<RenderBookDto> books = new ArrayList<>();
-		books.add(getRenderBookDto(13L));
-		books.add(getRenderBookDto(135L));
+		books.add(getRenderBookDto(13L, "title1"));
+		books.add(getRenderBookDto(135L, "title1"));
 
 		adminService.saveBooks(books);
 
@@ -156,8 +156,8 @@ public class AdminServiceIntegrationTest {
 	@DisplayName("전체 서적 가져오기 성공")
 	void findAllOK() {
 		List<RenderBookDto> books = new ArrayList<>();
-		books.add(getRenderBookDto(13L));
-		books.add(getRenderBookDto(135L));
+		books.add(getRenderBookDto(13L, "title1"));
+		books.add(getRenderBookDto(135L, "title2"));
 		adminService.saveBooks(books);
 
 		List<RenderBookDto> findBooks = adminService.findAll();
@@ -188,7 +188,7 @@ public class AdminServiceIntegrationTest {
 	void findByIsbnOk() {
 		Long isbn = 13L;
 		List<RenderBookDto> books = new ArrayList<>();
-		RenderBookDto book = getRenderBookDto(isbn);
+		RenderBookDto book = getRenderBookDto(isbn, "title");
 		books.add(book);
 		adminService.saveBooks(books);
 
@@ -217,19 +217,18 @@ public class AdminServiceIntegrationTest {
 	@DisplayName("서적 갱신 성공")
 	void updateBookOk() {
 		Long isbn = 13L;
+		String newTitle = "ASDF";
 		List<RenderBookDto> books = new ArrayList<>();
-		RenderBookDto book = getRenderBookDto(isbn);
-		books.add(book);
+		books.add(getRenderBookDto(isbn, "title"));
 		adminService.saveBooks(books);
 
-		book.setTitle("ASDF");
-		adminService.updateBook(book);
+		adminService.updateBook(getRenderBookDto(isbn, newTitle));
 
 		String updatedTitle = jdbcTemplate.queryForObject("SELECT title FROM BOOK WHERE isbn = ?", String.class, isbn);
 
 		assertAll(
 				() -> assertThat(updatedTitle).isNotNull(),
-				() -> assertThat(updatedTitle).isEqualTo(book.getTitle())
+				() -> assertThat(updatedTitle).isEqualTo(newTitle)
 		);
 		deleteImage();
 	}

@@ -1,10 +1,10 @@
 package kkanggu.KGBook.admin.dto;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 public class ApiBookDto {
 	private String title;
 	private String link;
@@ -15,7 +15,4 @@ public class ApiBookDto {
 	private String pubdate;
 	private Long isbn;
 	private String description;
-
-	public ApiBookDto() {
-	}
 }

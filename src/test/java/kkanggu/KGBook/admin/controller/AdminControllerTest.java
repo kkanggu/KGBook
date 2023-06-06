@@ -44,10 +44,10 @@ class AdminControllerTest {
 	@Captor
 	private ArgumentCaptor<List<RenderBookDto>> renderBookDtoArgumentCaptor;
 
-	private RenderBookDto getRenderBookDto() {
+	private RenderBookDto getRenderBookDto(Long isbn, String title) {
 		return RenderBookDto.builder()
-				.isbn(1357924680130L)
-				.title("book")
+				.isbn(isbn)
+				.title(title)
 				.author("author")
 				.publisher("publisher")
 				.originPrice(13579)
@@ -69,7 +69,7 @@ class AdminControllerTest {
 	@DisplayName("GET /admin/books, 서적 조회")
 	void booksOk() throws Exception {
 		List<RenderBookDto> books = new ArrayList<>();
-		books.add(getRenderBookDto());
+		books.add(getRenderBookDto(13L, "title"));
 		when(adminService.findAll()).thenReturn(books);
 
 		mockMvc.perform(get("/admin/books"))
@@ -95,7 +95,7 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/book/{isbn}, 서적 상세 조회 성공")
 	void getBookOk() throws Exception {
-		RenderBookDto book = getRenderBookDto();
+		RenderBookDto book = getRenderBookDto(13L, "title");
 		when(adminService.findByIsbn(book.getIsbn())).thenReturn(book);
 
 		mockMvc.perform(get("/admin/book/{isbn}", book.getIsbn()))
@@ -121,7 +121,7 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("POST /admin/book/{isbn}, 서적 업데이트")
 	void updateBook() throws Exception {
-		RenderBookDto book = getRenderBookDto();
+		RenderBookDto book = getRenderBookDto(13L, "title");
 		doNothing().when(adminService).updateBook(book);
 
 		mockMvc.perform(post("/admin/book/{isbn}", book.getIsbn()))
@@ -132,7 +132,7 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("GET /admin/book/{isbn}/edit, 서적 수정 페이지")
 	void editBookOk() throws Exception {
-		RenderBookDto book = getRenderBookDto();
+		RenderBookDto book = getRenderBookDto(13L, "title");
 		when(adminService.findByIsbn(book.getIsbn())).thenReturn(book);
 
 		mockMvc.perform(get("/admin/book/{isbn}/edit", book.getIsbn()))
@@ -168,7 +168,7 @@ class AdminControllerTest {
 	void fetchNewBookOk() throws Exception {
 		List<ApiBookDto> apiBookDtos = new ArrayList<>();
 		List<RenderBookDto> renderBookDtos = new ArrayList<>();
-		renderBookDtos.add(getRenderBookDto());
+		renderBookDtos.add(getRenderBookDto(13L, "title"));
 		ResponseEntity<String> responseEntity = ResponseEntity.ok("Mocking Response");
 		String keyword = "Test";
 		String searchRecent = "asdf";
@@ -206,7 +206,7 @@ class AdminControllerTest {
 	@DisplayName("GET /admin/book/new/list, 검색한 신규 서적 전체 조회")
 	void listNewBooks() throws Exception {
 		List<RenderBookDto> books = new ArrayList<>();
-		books.add(getRenderBookDto());
+		books.add(getRenderBookDto(13L, "title"));
 
 		MvcResult mvcResult = mockMvc.perform(get("/admin/book/new/list")
 						.flashAttr("books", books))
@@ -225,9 +225,8 @@ class AdminControllerTest {
 	@DisplayName("GET /admin/book/new/{isbn}}, 검색한 신규 서적 개별 조회 성공")
 	void getNewBookOk() throws Exception {
 		List<RenderBookDto> books = new ArrayList<>();
-		books.add(getRenderBookDto());
-		books.add(getRenderBookDto());
-		books.get(1).setIsbn(1L);
+		books.add(getRenderBookDto(13L, "title1"));
+		books.add(getRenderBookDto(135L, "title2"));
 		MockHttpSession mockHttpSession = new MockHttpSession();
 		mockHttpSession.setAttribute("books", books);
 
@@ -256,11 +255,10 @@ class AdminControllerTest {
 	@Test
 	@DisplayName("POST /admin/book/new/{isbn}, 검색한 신규 서적 수정 성공")
 	void editNewBookOk() throws Exception {
+		Long isbn = 13L;
 		List<RenderBookDto> books = new ArrayList<>();
-		books.add(getRenderBookDto());
-		RenderBookDto renderBookDto = books.get(0);
-		renderBookDto.setTitle("changeTitle");
-		renderBookDto.setAuthor("changeAuthor");
+		books.add(getRenderBookDto(isbn, "title1"));
+		RenderBookDto renderBookDto = getRenderBookDto(isbn, "title2");
 		MockHttpSession mockHttpSession = new MockHttpSession();
 		mockHttpSession.setAttribute("books", books);
 
@@ -273,8 +271,7 @@ class AdminControllerTest {
 				.andReturn();
 		List<RenderBookDto> flashBooks = (List<RenderBookDto>) mvcResult.getFlashMap().get("books");
 		assertAll(
-				() -> assertThat(flashBooks.get(0).getTitle()).isEqualTo(renderBookDto.getTitle()),
-				() -> assertThat(flashBooks.get(0).getAuthor()).isEqualTo(renderBookDto.getAuthor())
+				() -> assertThat(flashBooks.get(0).getTitle()).isEqualTo(renderBookDto.getTitle())
 		);
 	}
 
@@ -283,9 +280,8 @@ class AdminControllerTest {
 	void saveNewBooks() throws Exception {
 		List<RenderBookDto> books = new ArrayList<>();
 		List<RenderBookDto> renderBookDtos = new ArrayList<>();
-		books.add(getRenderBookDto());
-		books.add(getRenderBookDto());
-		books.get(1).setIsbn(1L);
+		books.add(getRenderBookDto(13L, "title1"));
+		books.add(getRenderBookDto(135L, "title2"));
 		renderBookDtos.add(books.get(0));
 		List<Boolean> selectedBooks = new ArrayList<>();
 		selectedBooks.add(true);

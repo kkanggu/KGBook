@@ -79,18 +79,17 @@ class AdminServiceTest {
 	}
 
 	private ApiBookDto getApiBookDto() {
-		ApiBookDto apiBookDto = new ApiBookDto();
-		apiBookDto.setTitle("book");
-		apiBookDto.setLink("https://search.naver.com");
-		apiBookDto.setImage("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg");
-		apiBookDto.setAuthor("author");
-		apiBookDto.setDiscount(13579);
-		apiBookDto.setPublisher("publisher");
-		apiBookDto.setPubdate("20230530");
-		apiBookDto.setIsbn(1357924680130L);
-		apiBookDto.setDescription("description");
-
-		return apiBookDto;
+		return ApiBookDto.builder()
+				.title("book")
+				.link("https://search.naver.com")
+				.image("https://shopping-phinf.pstatic.net/main_3249079/32490791688.20221230074134.jpg")
+				.author("author")
+				.discount(13579)
+				.publisher("publisher")
+				.pubdate("20230530")
+				.isbn(1357924680130L)
+				.description("description")
+				.build();
 	}
 
 	@ParameterizedTest
