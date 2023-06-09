@@ -4,12 +4,15 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import kkanggu.KGBook.sql.BookSql;
 import kkanggu.KGBook.user.entity.UserEntity;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Repository
 public class JdbcUserRepository implements UserRepository {
 	private final JdbcTemplate jdbcTemplate;
@@ -49,7 +52,15 @@ public class JdbcUserRepository implements UserRepository {
 
 	@Override
 	public UserEntity findById(Long id) {
-		return jdbcTemplate.queryForObject(BookSql.SELECT_USER_BY_ID, rowMapper(), id);
+		UserEntity user = null;
+
+		try {
+			user = jdbcTemplate.queryForObject(BookSql.SELECT_USER_BY_ID, rowMapper(), id);
+		} catch (EmptyResultDataAccessException e) {
+			log.info("No user exist with id {}", id);
+		}
+
+		return user;
 	}
 
 	private RowMapper<UserEntity> rowMapper() {
