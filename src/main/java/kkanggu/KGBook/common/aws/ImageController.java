@@ -3,6 +3,7 @@ package kkanggu.KGBook.common.aws;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -28,14 +29,17 @@ public class ImageController {
 		try {
 			// Set S3 File Name
 			URL originUrl = new URL(originImageUrl);
+			URLConnection urlConnection = originUrl.openConnection();
+			urlConnection.setConnectTimeout(3000);
+			urlConnection.setReadTimeout(5000);
 			String randomFileName = UUID.randomUUID().toString();
 			String fileExt = originUrl.getPath().substring(originUrl.getPath().lastIndexOf("."));
 			s3FileName = "book-image/" + randomFileName + fileExt;
 
 			// Set contentType and contentLength
-			InputStream inputStream = originUrl.openStream();
-			String contentType = originUrl.openConnection().getContentType();
-			long contentLength = originUrl.openConnection().getContentLengthLong();
+			InputStream inputStream = urlConnection.getInputStream();
+			String contentType = urlConnection.getContentType();
+			long contentLength = urlConnection.getContentLengthLong();
 
 			// Upload image to S3
 			ObjectMetadata metadata = new ObjectMetadata();
